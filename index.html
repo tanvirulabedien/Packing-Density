@@ -568,7 +568,9 @@ function updateSweep(phi0,sizes,fracs){
     document.getElementById('tblDiv').innerHTML='<div style="padding:16px;font-size:11px;color:var(--text3)">No sweep for monodisperse.</div>';
     return;
   }
-  const S=400,labels=[],dens=[],all=[];
+
+  // ── Chart sweep: always sweep f₁ with others proportional ──
+  const S=400,labels=[],dens=[];
   let bestRho=0,bestF1=0;
   const cF1=fracs[0];
   for(let i=0;i<=S;i++){
@@ -576,7 +578,7 @@ function updateSweep(phi0,sizes,fracs){
     let rho;
     if(mode==='bi') rho=furnasRho(phi0,sizes,[g,1-g]);
     else{const f23=fracs[1]+fracs[2],r23=f23>0?fracs[1]/f23:.5;rho=furnasRho(phi0,sizes,[g,(1-g)*r23,(1-g)*(1-r23)]);}
-    labels.push((g*100).toFixed(1));dens.push(+(rho*100).toFixed(4));all.push({f1:g,f2:1-g,rho});
+    labels.push((g*100).toFixed(1));dens.push(+(rho*100).toFixed(4));
     if(rho>bestRho){bestRho=rho;bestF1=g;}
   }
   const curIdx=Math.round(cF1*S);
@@ -601,13 +603,62 @@ function updateSweep(phi0,sizes,fracs){
   });
   document.getElementById('optbar').innerHTML=
     `Optimum: f₁=<em>${(bestF1*100).toFixed(1)}%</em> → ρ=<em>${(bestRho*100).toFixed(3)}%</em>  ·  Current: f₁=<em>${(cF1*100).toFixed(1)}%</em> → ρ=<em>${(furnasRho(phi0,sizes,fracs)*100).toFixed(3)}%</em>`;
+
+  // ── Top blends table ──
   if(mode==='bi'){
+    // Binary: 1-D sweep already done above
+    const all=[];
+    for(let i=0;i<=S;i++){
+      const g=i/S;
+      all.push({f1:g,f2:1-g,rho:furnasRho(phi0,sizes,[g,1-g])});
+    }
     all.sort((a,b)=>b.rho-a.rho);
+    // Deduplicate to spread out the table (step by 0.5% min gap)
+    const top=[];
+    for(const row of all){if(top.length>=12) break; if(top.every(t=>Math.abs(t.f1-row.f1)>.004)) top.push(row);}
     document.getElementById('tblDiv').innerHTML=`<table>
       <thead><tr><th>#</th><th>f₁ ${sizes[0]}µm</th><th>f₂ ${sizes[1]}µm</th><th>Packing</th><th>Void</th></tr></thead>
-      <tbody>${all.slice(0,12).map((r,i)=>`<tr>
+      <tbody>${top.map((r,i)=>`<tr>
         <td>${i+1}</td><td>${(r.f1*100).toFixed(1)}%</td><td>${(r.f2*100).toFixed(1)}%</td>
         <td>${(r.rho*100).toFixed(3)}%</td><td>${((1-r.rho)*100).toFixed(3)}%</td></tr>`).join('')}</tbody>
+    </table>`;
+
+  } else if(mode==='tri'){
+    // Trimodal: full 2-D grid sweep over the simplex f1+f2+f3=1
+    // Use 60 steps per axis → 60*60/2 ≈ 1800 evaluations (fast)
+    const T=60;
+    const all3=[];
+    for(let i=0;i<=T;i++){
+      const f1=i/T;
+      for(let j=0;j<=T-i;j++){
+        const f2=j/T;
+        const f3=Math.max(0,1-f1-f2);
+        if(f1+f2>1.001) continue;
+        const rho=furnasRho(phi0,sizes,[f1,f2,f3]);
+        all3.push({f1,f2,f3,rho});
+      }
+    }
+    all3.sort((a,b)=>b.rho-a.rho);
+    // Deduplicate so table shows diverse blends, not 12 near-identical plateau entries
+    const top3=[];
+    for(const row of all3){
+      if(top3.length>=12) break;
+      const isClose=top3.some(t=>
+        Math.abs(t.f1-row.f1)<.015 &&
+        Math.abs(t.f2-row.f2)<.015 &&
+        Math.abs(t.f3-row.f3)<.015
+      );
+      if(!isClose) top3.push(row);
+    }
+    document.getElementById('tblDiv').innerHTML=`<table>
+      <thead><tr><th>#</th><th>f₁ ${sizes[0]}µm</th><th>f₂ ${sizes[1]}µm</th><th>f₃ ${sizes[2]}µm</th><th>Packing</th><th>Void</th></tr></thead>
+      <tbody>${top3.map((r,i)=>`<tr>
+        <td>${i+1}</td>
+        <td>${(r.f1*100).toFixed(1)}%</td>
+        <td>${(r.f2*100).toFixed(1)}%</td>
+        <td>${(r.f3*100).toFixed(1)}%</td>
+        <td>${(r.rho*100).toFixed(3)}%</td>
+        <td>${((1-r.rho)*100).toFixed(3)}%</td></tr>`).join('')}</tbody>
     </table>`;
   }
 }
@@ -631,6 +682,25 @@ function setVTab(t){
 // ═══════════════════════════════════════════════════════════
 // DRAW PARTICLE — reusable 3-D sphere with specular
 // ═══════════════════════════════════════════════════════════
+// ── HiDPI canvas setup ──────────────────────────────────────
+// Call once per draw. Sets canvas pixel buffer = CSS size × DPR,
+// scales ctx so all draw calls use CSS coordinates.
+// Returns {W, H} in CSS pixels (logical size).
+function setupCanvas(canvas){
+  const dpr=window.devicePixelRatio||1;
+  const rect=canvas.getBoundingClientRect();
+  // Only resize if dimensions actually changed (avoids clearing mid-draw)
+  const cssW=rect.width||canvas.offsetWidth||500;
+  const cssH=rect.height||canvas.offsetHeight||460;
+  if(canvas.width!==Math.round(cssW*dpr)||canvas.height!==Math.round(cssH*dpr)){
+    canvas.width =Math.round(cssW*dpr);
+    canvas.height=Math.round(cssH*dpr);
+  }
+  const ctx=canvas.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0); // reset + scale
+  return {ctx, W:cssW, H:cssH, dpr};
+}
+
 function drawSphere(ctx,x,y,r,baseCol,lightCol){
   // Body gradient
   const grd=ctx.createRadialGradient(x-r*.28,y-r*.32,r*.04,x+r*.05,y+r*.06,r);
@@ -676,8 +746,7 @@ function darkCol(hex,f){
 function drawPack(phi0,sizes,fracs,rho){
   const canvas=document.getElementById('packCanvas');
   if(!canvas) return;
-  const W=canvas.width, H=canvas.height;
-  const ctx=canvas.getContext('2d');
+  const {ctx,W,H}=setupCanvas(canvas);
 
   // Background: warm paper with subtle dots for void texture
   ctx.fillStyle='#f5f2e8';
@@ -794,8 +863,7 @@ function roundRect(ctx,x,y,w,h,r){
 function drawREff(phi0,sizes){
   const canvas=document.getElementById('reffCanvas');
   if(!canvas) return;
-  const W=canvas.width,H=canvas.height;
-  const ctx=canvas.getContext('2d');
+  const {ctx,W,H}=setupCanvas(canvas);
   ctx.fillStyle='#f5f2e8';ctx.fillRect(0,0,W,H);
 
   const rVals=[.05,.20,.65];
