@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Particle Packing Optimizer</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap');
+:root{
+  --bg:#0a0c10;--surface:#111318;--surface2:#181c24;
+  --border:#1e2430;--border2:#2a3040;
+  --accent:#00e5a0;--accent2:#0099ff;--accent3:#ff6b35;
+  --text:#e8ecf4;--text2:#7a8499;--text3:#4a5268;
+  --mono:'DM Mono',monospace;--sans:'Syne',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(0,229,160,0.025) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(0,229,160,0.025) 1px,transparent 1px);
+  background-size:40px 40px;pointer-events:none;z-index:0;}
+.app{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:2rem 1.5rem 4rem;}
+
+/* Header */
+.eyebrow{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;}
+h1{font-size:clamp(22px,3.5vw,36px);font-weight:800;line-height:1.1;}
+h1 span{color:var(--accent);}
+.sub{font-family:var(--mono);font-size:12px;color:var(--text2);margin-top:8px;line-height:1.7;}
+.hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:2rem;}
+.badge{background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.25);color:var(--accent);font-family:var(--mono);font-size:11px;padding:5px 12px;border-radius:4px;letter-spacing:1px;white-space:nowrap;margin-top:4px;}
+
+/* Mode */
+.mode-row{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.mbtn{font-family:var(--mono);font-size:12px;letter-spacing:1px;padding:8px 20px;border-radius:4px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;transition:all 0.15s;text-transform:uppercase;}
+.mbtn:hover{border-color:var(--accent);color:var(--accent);}
+.mbtn.active{background:rgba(0,229,160,0.12);border-color:var(--accent);color:var(--accent);}
+
+/* Layout */
+.grid2{display:grid;grid-template-columns:340px 1fr;gap:1.25rem;align-items:start;}
+@media(max-width:820px){.grid2{grid-template-columns:1fr;}}
+
+/* Panel */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:1rem;}
+.panel:last-child{margin-bottom:0;}
+.ph{padding:10px 16px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--text2);text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.ph::before{content:'//';color:var(--accent);}
+.pb{padding:16px;}
+
+/* Inputs */
+.isec{margin-bottom:14px;}
+.isec:last-child{margin-bottom:0;}
+.ilbl{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px;margin-bottom:8px;display:block;text-transform:uppercase;}
+.prow{display:grid;grid-template-columns:12px 1fr auto;align-items:center;gap:10px;margin-bottom:7px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 10px;}
+.dot{width:10px;height:10px;border-radius:50%;}
+.d1{background:var(--accent);}
+.d2{background:var(--accent2);}
+.d3{background:var(--accent3);}
+.pname{font-family:var(--mono);font-size:11px;color:var(--text2);}
+.nw{display:flex;align-items:center;gap:6px;}
+input[type=number]{background:var(--bg);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:13px;padding:5px 8px;border-radius:4px;width:85px;text-align:right;outline:none;transition:border-color 0.15s;}
+input[type=number]:focus{border-color:var(--accent);}
+.unit{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.fld{display:flex;flex-direction:column;gap:4px;}
+.fld label{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;}
+.fld input{width:100%;}
+.div{height:1px;background:var(--border);margin:12px 0;}
+.cbtn{width:100%;padding:12px;margin-top:12px;background:var(--accent);color:#000;font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:2px;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;transition:all 0.15s;}
+.cbtn:hover{background:#00ffb3;transform:translateY(-1px);}
+
+/* Metrics */
+.mg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem;}
+.mt{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:12px 14px;position:relative;overflow:hidden;}
+.mt::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--accent);transform:scaleX(0);transition:transform 0.5s;transform-origin:left;}
+.mt.best::after{transform:scaleX(1);}
+.ml{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+.mv{font-family:var(--mono);font-size:20px;font-weight:500;color:var(--text);}
+.mv.ac{color:var(--accent);}
+.ms{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:3px;}
+
+/* View tabs */
+.vtabs{display:flex;gap:6px;padding:10px 16px;border-bottom:1px solid var(--border);}
+.vt{font-family:var(--mono);font-size:11px;letter-spacing:1px;padding:4px 12px;border-radius:3px;border:1px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;text-transform:uppercase;transition:all 0.12s;}
+.vt.active{border-color:var(--accent);color:var(--accent);background:rgba(0,229,160,0.08);}
+
+/* Charts */
+.co{position:relative;width:100%;height:280px;padding:16px;}
+.lgd{display:flex;gap:16px;flex-wrap:wrap;padding:8px 16px;font-family:var(--mono);font-size:11px;color:var(--text2);}
+.li{display:flex;align-items:center;gap:6px;}
+.sw{width:22px;height:3px;border-radius:2px;}
+.sw2{background:repeating-linear-gradient(90deg,var(--accent3) 0,var(--accent3) 5px,transparent 5px,transparent 9px);}
+.ci{font-family:var(--mono);font-size:11px;color:var(--text2);padding:8px 16px;border-top:1px solid var(--border);line-height:1.7;}
+.ob{font-family:var(--mono);font-size:11px;color:var(--text2);padding:8px 16px;background:rgba(0,229,160,0.06);border-top:1px solid rgba(0,229,160,0.2);}
+.ob em{color:var(--accent);font-style:normal;}
+
+/* Table */
+.tw{overflow-x:auto;padding:12px;}
+table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;}
+thead tr{background:var(--surface2);}
+th{padding:8px 12px;text-align:right;color:var(--text3);font-weight:500;font-size:10px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border2);}
+th:first-child{text-align:left;}
+td{padding:6px 12px;text-align:right;border-bottom:1px solid var(--border);color:var(--text2);}
+td:first-child{text-align:left;color:var(--text3);}
+tr:first-child td{color:var(--accent);font-weight:500;}
+tr:hover td{background:rgba(255,255,255,0.02);}
+
+/* Heatmap */
+.hw{padding:16px;display:flex;justify-content:center;}
+canvas#heatmap{border-radius:6px;max-width:100%;}
+.cb{display:flex;align-items:center;gap:10px;padding:4px 16px 12px;font-family:var(--mono);font-size:10px;color:var(--text3);}
+.cbr{flex:1;height:10px;border-radius:3px;background:linear-gradient(90deg,#0a0c10,#003d26,#00b37a,#00e5a0);}
+
+/* Ratio */
+.rl{font-family:var(--mono);font-size:12px;line-height:2.2;}
+
+/* Manual */
+.mr{margin-top:8px;font-family:var(--mono);font-size:12px;min-height:18px;}
+
+/* Warn box */
+.wbox{background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.3);border-radius:6px;padding:10px 14px;font-family:var(--mono);font-size:11px;color:#ff9966;line-height:1.7;margin-top:10px;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.anim{animation:fadeUp 0.3s ease forwards;}
+.hidden{display:none!important;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="hdr">
+    <div>
+      <div class="eyebrow">Powder Technology · Stovall–Furnas Model</div>
+      <h1>Particle <span>Packing</span> Optimizer</h1>
+      <div class="sub">Bimodal &amp; trimodal random close packing of spheres<br>Sweep all volume fractions · Find global optimum</div>
+    </div>
+    <div class="badge">v2 — corrected model</div>
+  </div>
+
+  <div class="mode-row">
+    <button class="mbtn active" id="btn-mono" onclick="setMode('mono')">01 // Monodisperse</button>
+    <button class="mbtn" id="btn-bi" onclick="setMode('bi')">02 // Bimodal</button>
+    <button class="mbtn" id="btn-tri" onclick="setMode('tri')">03 // Trimodal</button>
+  </div>
+
+  <div class="grid2">
+    <!-- LEFT -->
+    <div>
+      <div class="panel">
+        <div class="ph">Parameters</div>
+        <div class="pb">
+
+          <div class="isec">
+            <span class="ilbl">Particle sizes</span>
+            <div class="prow">
+              <div class="dot d1"></div>
+              <div class="pname">Component 1</div>
+              <div class="nw"><input type="number" id="d1" value="80" min="0.001" step="any"><span class="unit">µm</span></div>
+            </div>
+            <div class="prow" id="row-d2" style="display:none">
+              <div class="dot d2"></div>
+              <div class="pname">Component 2</div>
+              <div class="nw"><input type="number" id="d2" value="1" min="0.001" step="any"><span class="unit">µm</span></div>
+            </div>
+            <div class="prow" id="row-d3" style="display:none">
+              <div class="dot d3"></div>
+              <div class="pname">Component 3</div>
+              <div class="nw"><input type="number" id="d3" value="1" min="0.001" step="any"><span class="unit">µm</span></div>
+            </div>
+          </div>
+
+          <div class="div"></div>
+
+          <div class="isec">
+            <span class="ilbl">Packing parameters</span>
+            <div class="r2">
+              <div class="fld"><label>φ₀ mono RCP</label><input type="number" id="phi0" value="0.64" min="0.40" max="0.74" step="0.01"></div>
+              <div class="fld"><label>Sweep steps</label><input type="number" id="steps" value="400" min="100" max="1000" step="100"></div>
+            </div>
+          </div>
+
+          <div class="div"></div>
+
+          <div class="isec" id="manual-sec" style="display:none">
+            <span class="ilbl">Evaluate specific blend</span>
+            <div id="manual-inputs"></div>
+            <div class="mr" id="manual-result"></div>
+          </div>
+
+          <button class="cbtn" onclick="compute()">▶ Calculate optimal packing</button>
+        </div>
+      </div>
+
+      <!-- Ratios -->
+      <div class="panel" id="ratio-panel" style="display:none">
+        <div class="ph">Size ratios (d_small / d_large)</div>
+        <div class="pb" id="ratio-body"></div>
+      </div>
+
+      <!-- Model info -->
+      <div class="panel">
+        <div class="ph">Model details</div>
+        <div class="pb" style="font-family:var(--mono);font-size:11px;color:var(--text2);line-height:1.9;">
+          <div><span style="color:var(--accent)">Stovall–Furnas linear packing:</span></div>
+          <div>ρ = φ₀ / (1 − (1−φ₀)·Σxⱼ)</div>
+          <div style="color:var(--text3);margin-top:4px;">Σxⱼ = sum of non-dominant fractions</div>
+          <div style="color:var(--text3);">Both regimes computed; minimum taken</div>
+          <div class="div"></div>
+          <div>φ₀ = 0.64 → random close packing, spheres</div>
+          <div>φ₀ = 0.60 → irregular / rough particles</div>
+          <div>φ₀ = 0.74 → FCC / HCP ordered packing</div>
+          <div class="div"></div>
+          <div style="color:var(--text3);">Model assumes: spherical particles, no surface forces, sufficient size ratio for void filling (r &lt; 0.154 for tetrahedral voids).</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div id="results-col">
+      <div class="panel">
+        <div class="ph">Awaiting calculation</div>
+        <div class="pb" style="text-align:center;font-family:var(--mono);font-size:12px;color:var(--text3);padding:48px 20px;line-height:2.2;">
+          Configure particle sizes above<br>and click Calculate
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let mode = 'mono';
+let chartInst = null;
+let savedHeat = null;
+
+/* =====================================================================
+   CORRECTED STOVALL-FURNAS MODEL
+   For n components, the packing in each "dominant phase" regime is:
+     rho_i = phi0 / (1 - (1-phi0) * sum_{j≠i} x_j)
+   The physically realized packing = MIN over all regimes
+   (whichever constraint is tightest).
+   The optimum occurs at the crossover between regimes.
+   ===================================================================== */
+function furnasRho(phi0, fracs) {
+  const n = fracs.length;
+  if (n === 1) return phi0;
+
+  // Compute rho for each dominant-component regime
+  const rhos = fracs.map((fi, i) => {
+    if (fi <= 1e-9) return 0;                          // this component absent
+    const others = fracs.reduce((s, fj, j) => j === i ? s : s + fj, 0);
+    return phi0 / Math.max(0.001, 1 - (1 - phi0) * others);
+  });
+
+  // Valid regime rhos (only components actually present)
+  const valid = rhos.filter((r, i) => fracs[i] > 1e-9);
+  if (valid.length === 0) return phi0;
+
+  // Minimum = constraining (actual) packing
+  return Math.min(Math.min(...valid), 0.975);
+}
+
+/* =====================================================================
+   HELPERS
+   ===================================================================== */
+function pf(id) { return parseFloat(document.getElementById(id).value) || 0; }
+function pi(id) { return parseInt(document.getElementById(id).value) || 400; }
+
+function getSizes() {
+  const d1 = pf('d1') || 80;
+  if (mode === 'mono') return [d1];
+  const d2 = pf('d2') || 5;
+  if (mode === 'bi') return [d1, d2];
+  return [d1, d2, pf('d3') || 1];
+}
+
+function setMode(m) {
+  mode = m;
+  ['mono','bi','tri'].forEach(x => document.getElementById('btn-'+x).classList.toggle('active', x===m));
+  document.getElementById('row-d2').style.display = (m==='bi'||m==='tri') ? '' : 'none';
+  document.getElementById('row-d3').style.display = m==='tri' ? '' : 'none';
+  document.getElementById('manual-sec').style.display = m!=='mono' ? '' : 'none';
+  document.getElementById('ratio-panel').style.display = 'none';
+  buildManualInputs();
+}
+
+function buildManualInputs() {
+  const div = document.getElementById('manual-inputs');
+  if (mode === 'mono') { div.innerHTML = ''; return; }
+  const n = mode === 'bi' ? 2 : 3;
+  div.innerHTML = `<div class="r2" style="${n===3?'grid-template-columns:1fr 1fr 1fr':''}">
+    ${Array.from({length:n},(_,i)=>`<div class="fld">
+      <label>f${i+1} comp ${i+1}</label>
+      <input type="number" id="mf${i+1}" min="0" max="1" step="0.01" placeholder="—" oninput="evalManual()">
+    </div>`).join('')}
+  </div>`;
+}
+
+function evalManual() {
+  const sizes = getSizes();
+  const n = sizes.length;
+  const fracs = Array.from({length:n}, (_,i) => {
+    const el = document.getElementById('mf'+(i+1));
+    return el ? parseFloat(el.value) : NaN;
+  });
+  const res = document.getElementById('manual-result');
+  if (fracs.some(isNaN)) { res.textContent = ''; return; }
+  const sum = fracs.reduce((a,b)=>a+b,0);
+  if (Math.abs(sum-1) > 0.015) {
+    res.style.color = 'var(--accent3)';
+    res.textContent = `⚠ fractions sum to ${sum.toFixed(3)}, must equal 1.0`;
+    return;
+  }
+  const phi0 = pf('phi0') || 0.64;
+  const rho = furnasRho(phi0, fracs);
+  res.style.color = 'var(--accent)';
+  res.textContent = `→ Packing: ${(rho*100).toFixed(3)}%  |  Void: ${((1-rho)*100).toFixed(3)}%`;
+}
+
+function showRatios(sizes) {
+  if (mode === 'mono') { document.getElementById('ratio-panel').style.display='none'; return; }
+  const sorted = [...sizes].sort((a,b)=>b-a);
+  let html = '';
+  for (let i = 0; i < sorted.length-1; i++) {
+    const r = sorted[i+1] / sorted[i];
+    const qual = r < 0.1 ? 'Excellent — small fits in voids easily'
+                : r < 0.154 ? 'Good — fits in tetrahedral voids'
+                : r < 0.3 ? 'Moderate — partial void filling'
+                : 'Poor — limited packing gain';
+    const col = r < 0.154 ? 'var(--accent)' : r < 0.3 ? '#ffcc00' : 'var(--accent3)';
+    html += `<div class="rl">${sorted[i+1].toFixed(3)} µm / ${sorted[i].toFixed(3)} µm = <span style="color:${col}">${r.toFixed(4)}</span>  <span style="color:var(--text3)">${qual}</span></div>`;
+  }
+  document.getElementById('ratio-body').innerHTML = html;
+  document.getElementById('ratio-panel').style.display = '';
+}
+
+/* =====================================================================
+   MAIN COMPUTE
+   ===================================================================== */
+function compute() {
+  const phi0 = pf('phi0') || 0.64;
+  const steps = Math.max(100, pi('steps'));
+  const sizes = getSizes();
+  showRatios(sizes);
+  if (mode === 'mono') doMono(phi0, sizes);
+  else if (mode === 'bi') doBi(phi0, sizes, steps);
+  else doTri(phi0, sizes, steps);
+}
+
+function setResults(html) {
+  document.getElementById('results-col').innerHTML = html;
+}
+
+function mGrid(items) {
+  return `<div class="mg">${items.map(m=>`
+    <div class="mt${m.best?' best':''}">
+      <div class="ml">${m.lbl}</div>
+      <div class="mv${m.ac?' ac':''}">${m.val}</div>
+      ${m.sub?`<div class="ms">${m.sub}</div>`:''}
+    </div>`).join('')}</div>`;
+}
+
+/* MONO */
+function doMono(phi0, sizes) {
+  const th_bi = (phi0 + (1-phi0)*phi0) * 100;
+  setResults(`
+    <div class="panel anim">
+      <div class="ph">Monodisperse · ${sizes[0]} µm</div>
+      <div class="pb">
+        ${mGrid([
+          {lbl:'Packing density', val:(phi0*100).toFixed(2)+'%', ac:true, best:true},
+          {lbl:'Void fraction', val:((1-phi0)*100).toFixed(2)+'%'},
+          {lbl:'Particle size', val:sizes[0]+' µm'},
+        ])}
+        <div style="font-family:var(--mono);font-size:11px;color:var(--text2);line-height:1.9;margin-top:6px;">
+          Packing density = φ₀ directly for single component.<br>
+          Theoretical bimodal max (ideal size ratio): <span style="color:var(--accent)">${th_bi.toFixed(1)}%</span><br>
+          Switch to bimodal or trimodal mode to optimize.
+        </div>
+      </div>
+    </div>`);
+}
+
+/* BIMODAL */
+function doBi(phi0, sizes, steps) {
+  const [d1, d2] = sizes;
+  const labels=[], dens=[], voids=[], ldArr=[], sdArr=[], all=[];
+  let bestRho = 0, bestF1 = 0;
+
+  for (let i = 0; i <= steps; i++) {
+    const f1 = i/steps, f2 = 1-f1;
+    const rho = furnasRho(phi0, [f1, f2]);
+
+    // Also compute individual regime values for display
+    const ld = f2 > 1e-9 ? phi0/(1-(1-phi0)*f2) : phi0;
+    const sd = f1 > 1e-9 ? phi0/(1-(1-phi0)*f1) : phi0;
+
+    labels.push((f1*100).toFixed(1));
+    dens.push(+(rho*100).toFixed(4));
+    voids.push(+((1-rho)*100).toFixed(4));
+    ldArr.push(+(Math.min(ld,0.98)*100).toFixed(4));
+    sdArr.push(+(Math.min(sd,0.98)*100).toFixed(4));
+    all.push({f1, f2, rho});
+    if (rho > bestRho) { bestRho = rho; bestF1 = f1; }
+  }
+
+  all.sort((a,b) => b.rho - a.rho);
+  const top = all.slice(0, 15);
+  const gain = ((bestRho - phi0)*100).toFixed(2);
+  const r = Math.min(d1,d2)/Math.max(d1,d2);
+
+  setResults(`
+    <div class="panel anim">
+      <div class="ph">Bimodal · ${d1} µm + ${d2} µm</div>
+      <div class="pb">
+        ${mGrid([
+          {lbl:'Optimal packing', val:(bestRho*100).toFixed(2)+'%', ac:true, best:true},
+          {lbl:'Void fraction', val:((1-bestRho)*100).toFixed(2)+'%'},
+          {lbl:'Gain vs mono', val:'+'+gain+' pts', sub:'improvement'},
+          {lbl:'f₁ (${d1} µm)', val:(bestF1*100).toFixed(1)+'%', sub:'comp 1 fraction'},
+          {lbl:'f₂ (${d2} µm)', val:((1-bestF1)*100).toFixed(1)+'%', sub:'comp 2 fraction'},
+          {lbl:'Size ratio', val:r.toFixed(4), sub:'d_min / d_max'},
+        ])}
+      </div>
+      <div class="vtabs" id="vtabs-bi">
+        <button class="vt active" onclick="showView('bi','line')">Sweep curve</button>
+        <button class="vt" onclick="showView('bi','regimes')">Regime breakdown</button>
+        <button class="vt" onclick="showView('bi','table')">Top 15 blends</button>
+      </div>
+
+      <div id="bi-line">
+        <div class="co"><canvas id="biChart" role="img" aria-label="Packing density vs volume fraction bimodal"></canvas></div>
+        <div class="lgd">
+          <div class="li"><div class="sw" style="background:var(--accent)"></div>Packing density (%)</div>
+          <div class="li"><div class="sw sw2"></div>Void fraction (%)</div>
+        </div>
+        <div class="ob">Optimum: f₁ = <em>${(bestF1*100).toFixed(1)}%</em> (${d1}µm) · f₂ = <em>${((1-bestF1)*100).toFixed(1)}%</em> (${d2}µm) → packing = <em>${(bestRho*100).toFixed(3)}%</em></div>
+      </div>
+
+      <div id="bi-regimes" class="hidden">
+        <div class="co"><canvas id="biRegChart" role="img" aria-label="Regime breakdown bimodal"></canvas></div>
+        <div class="lgd">
+          <div class="li"><div class="sw" style="background:var(--accent)"></div>Actual packing (min of regimes)</div>
+          <div class="li"><div class="sw" style="background:var(--accent2)"></div>LD regime: φ₀/(1−(1−φ₀)·f₂)</div>
+          <div class="li"><div class="sw" style="background:var(--accent3)"></div>SD regime: φ₀/(1−(1−φ₀)·f₁)</div>
+        </div>
+        <div class="ci">Optimum occurs at the intersection of the two regime curves. Below the crossing, large-dominant (LD) constrains. Above, small-dominant (SD) constrains.</div>
+      </div>
+
+      <div id="bi-table" class="hidden">
+        <div class="tw">
+          <table>
+            <thead><tr><th>#</th><th>f₁ ${d1}µm (%)</th><th>f₂ ${d2}µm (%)</th><th>Packing (%)</th><th>Void (%)</th></tr></thead>
+            <tbody>${top.map((r,i)=>`<tr><td>${i+1}</td><td>${(r.f1*100).toFixed(1)}</td><td>${(r.f2*100).toFixed(1)}</td><td>${(r.rho*100).toFixed(3)}</td><td>${((1-r.rho)*100).toFixed(3)}</td></tr>`).join('')}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>`);
+
+  setTimeout(() => {
+    drawBiLine(labels, dens, voids, 'biChart');
+    drawBiRegimes(labels, dens, ldArr, sdArr, 'biRegChart');
+  }, 60);
+}
+
+/* TRIMODAL */
+function doTri(phi0, sizes, steps) {
+  const [d1, d2, d3] = sizes;
+  let bestRho=0, bestF1=0, bestF2=0, bestF3=0;
+  const f1Axis=[], bestPerF1=[];
+  const all=[], heat=[];
+
+  for (let i = 0; i <= steps; i++) {
+    const f1 = i/steps;
+    let rowBest = 0;
+    for (let j = 0; j <= steps-i; j++) {
+      const f2 = j/steps;
+      const f3 = Math.max(0, 1-f1-f2);
+      if (f1+f2 > 1.001) continue;
+      const rho = furnasRho(phi0, [f1, f2, f3]);
+      all.push({f1, f2, f3, rho});
+      heat.push({f1, f2, rho});
+      if (rho > rowBest) rowBest = rho;
+      if (rho > bestRho) { bestRho=rho; bestF1=f1; bestF2=f2; bestF3=f3; }
+    }
+    f1Axis.push((f1*100).toFixed(1));
+    bestPerF1.push(+(rowBest*100).toFixed(4));
+  }
+
+  all.sort((a,b) => b.rho-a.rho);
+  const top = all.slice(0,15);
+  const gain = ((bestRho - phi0)*100).toFixed(2);
+  savedHeat = {heat, steps, bestF1, bestF2, phi0, bestRho};
+
+  setResults(`
+    <div class="panel anim">
+      <div class="ph">Trimodal · ${d1} µm + ${d2} µm + ${d3} µm</div>
+      <div class="pb">
+        ${mGrid([
+          {lbl:'Optimal packing', val:(bestRho*100).toFixed(2)+'%', ac:true, best:true},
+          {lbl:'Void fraction', val:((1-bestRho)*100).toFixed(2)+'%'},
+          {lbl:'Gain vs mono', val:'+'+gain+' pts', sub:'improvement'},
+          {lbl:'f₁ (${d1} µm)', val:(bestF1*100).toFixed(1)+'%', sub:'large'},
+          {lbl:'f₂ (${d2} µm)', val:(bestF2*100).toFixed(1)+'%', sub:'medium'},
+          {lbl:'f₃ (${d3} µm)', val:(bestF3*100).toFixed(1)+'%', sub:'small'},
+        ])}
+      </div>
+      <div class="vtabs" id="vtabs-tri">
+        <button class="vt active" onclick="showView('tri','line')">f₁ sweep</button>
+        <button class="vt" onclick="showView('tri','heatmap')">Heatmap (f₁ vs f₂)</button>
+        <button class="vt" onclick="showView('tri','table')">Top 15 blends</button>
+      </div>
+
+      <div id="tri-line">
+        <div class="co"><canvas id="triChart" role="img" aria-label="Best packing per f1 trimodal"></canvas></div>
+        <div class="lgd">
+          <div class="li"><div class="sw" style="background:var(--accent)"></div>Best packing per f₁ (optimized over f₂, f₃)</div>
+        </div>
+        <div class="ob">Optimum: f₁=<em>${(bestF1*100).toFixed(1)}%</em> · f₂=<em>${(bestF2*100).toFixed(1)}%</em> · f₃=<em>${(bestF3*100).toFixed(1)}%</em> → packing=<em>${(bestRho*100).toFixed(3)}%</em></div>
+      </div>
+
+      <div id="tri-heatmap" class="hidden">
+        <div class="hw"><canvas id="heatmap"></canvas></div>
+        <div class="cb">
+          <span>${(phi0*100).toFixed(0)}%</span>
+          <div class="cbr"></div>
+          <span>${(bestRho*100).toFixed(1)}%</span>
+        </div>
+        <div class="ci">X = f₁ (${d1}µm) · Y = f₂ (${d2}µm) · f₃ = 1−f₁−f₂ · ○ = global optimum · dashed = feasibility boundary</div>
+      </div>
+
+      <div id="tri-table" class="hidden">
+        <div class="tw">
+          <table>
+            <thead><tr><th>#</th><th>f₁ ${d1}µm</th><th>f₂ ${d2}µm</th><th>f₃ ${d3}µm</th><th>Packing (%)</th><th>Void (%)</th></tr></thead>
+            <tbody>${top.map((r,i)=>`<tr><td>${i+1}</td><td>${(r.f1*100).toFixed(1)}%</td><td>${(r.f2*100).toFixed(1)}%</td><td>${(r.f3*100).toFixed(1)}%</td><td>${(r.rho*100).toFixed(3)}</td><td>${((1-r.rho)*100).toFixed(3)}</td></tr>`).join('')}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>`);
+
+  setTimeout(() => {
+    drawTriLine(f1Axis, bestPerF1, d1, bestF1, bestRho);
+    // heatmap drawn on tab click
+  }, 60);
+}
+
+/* =====================================================================
+   CHART DRAWING
+   ===================================================================== */
+const CHART_OPTS = (xLabel, yLabel) => ({
+  responsive: true, maintainAspectRatio: false,
+  plugins: {
+    legend: {display: false},
+    tooltip: {mode:'index', intersect:false, callbacks:{label: c=>`${c.dataset.label}: ${c.parsed.y.toFixed(3)}%`}}
+  },
+  scales: {
+    x: {title:{display:true,text:xLabel,color:'#4a5268',font:{family:'DM Mono',size:11}},
+        ticks:{color:'#4a5268',font:{family:'DM Mono',size:10},maxTicksLimit:12},
+        grid:{color:'rgba(255,255,255,0.04)'}},
+    y: {title:{display:true,text:yLabel,color:'#4a5268',font:{family:'DM Mono',size:11}},
+        ticks:{color:'#4a5268',font:{family:'DM Mono',size:10}},
+        grid:{color:'rgba(255,255,255,0.04)'}}
+  }
+});
+
+function drawBiLine(labels, dens, voids, canvasId) {
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
+  const ctx = document.getElementById(canvasId); if (!ctx) return;
+  chartInst = new Chart(ctx, {
+    type:'line',
+    data:{labels, datasets:[
+      {label:'Packing density (%)',data:dens,borderColor:'#00e5a0',backgroundColor:'rgba(0,229,160,0.07)',fill:true,tension:0.35,pointRadius:0,borderWidth:2},
+      {label:'Void fraction (%)',data:voids,borderColor:'#ff6b35',backgroundColor:'transparent',fill:false,tension:0.35,pointRadius:0,borderWidth:1.5,borderDash:[5,3]},
+    ]},
+    options: CHART_OPTS('Volume fraction of Component 1 (%) →','Value (%)')
+  });
+}
+
+function drawBiRegimes(labels, dens, ldArr, sdArr, canvasId) {
+  const ctx = document.getElementById(canvasId); if (!ctx) return;
+  new Chart(ctx, {
+    type:'line',
+    data:{labels, datasets:[
+      {label:'Actual packing (%)',data:dens,borderColor:'#00e5a0',backgroundColor:'transparent',tension:0.35,pointRadius:0,borderWidth:2.5},
+      {label:'LD regime (%)',data:ldArr,borderColor:'#0099ff',backgroundColor:'transparent',tension:0.35,pointRadius:0,borderWidth:1.5,borderDash:[4,3]},
+      {label:'SD regime (%)',data:sdArr,borderColor:'#ff6b35',backgroundColor:'transparent',tension:0.35,pointRadius:0,borderWidth:1.5,borderDash:[4,3]},
+    ]},
+    options: CHART_OPTS('Volume fraction of Component 1 (%) →','Packing density (%)')
+  });
+}
+
+function drawTriLine(f1Axis, bestPerF1, d1, bestF1, bestRho) {
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
+  const ctx = document.getElementById('triChart'); if (!ctx) return;
+  chartInst = new Chart(ctx, {
+    type:'line',
+    data:{labels:f1Axis, datasets:[{
+      label:'Best packing (%)',data:bestPerF1,
+      borderColor:'#00e5a0',backgroundColor:'rgba(0,229,160,0.07)',
+      fill:true,tension:0.35,pointRadius:0,borderWidth:2
+    }]},
+    options: CHART_OPTS(`Volume fraction f₁ of ${d1} µm (%) →`, 'Max packing density (%)')
+  });
+}
+
+function drawHeatmap() {
+  if (!savedHeat) return;
+  const {heat, steps, bestF1, bestF2, phi0, bestRho} = savedHeat;
+  const canvas = document.getElementById('heatmap');
+  if (!canvas) return;
+  const wrap = canvas.parentElement;
+  const sz = Math.min(440, (wrap.offsetWidth || 460) - 32);
+  canvas.width = sz; canvas.height = sz;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#0a0c10';
+  ctx.fillRect(0, 0, sz, sz);
+
+  const span = Math.max(bestRho - phi0, 0.01);
+  const cell = sz / (steps + 2);
+
+  heat.forEach(({f1, f2, rho}) => {
+    if (f1 + f2 > 1.01) return;
+    const x = Math.round(f1 * (sz-1));
+    const y = Math.round((1-f2) * (sz-1));
+    const t = Math.max(0, Math.min(1, (rho - phi0) / span));
+    const g = Math.round(30 + t*199);
+    const b = Math.round(20 + t*100);
+    ctx.fillStyle = `rgba(0,${g},${b},${0.2+t*0.8})`;
+    ctx.fillRect(x, y, Math.ceil(cell*1.8), Math.ceil(cell*1.8));
+  });
+
+  // Feasibility boundary
+  ctx.beginPath(); ctx.moveTo(sz, 0); ctx.lineTo(0, sz);
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = 1; ctx.setLineDash([5,4]); ctx.stroke(); ctx.setLineDash([]);
+
+  // Optimal point
+  const ox = bestF1*(sz-1), oy = (1-bestF2)*(sz-1);
+  ctx.beginPath(); ctx.arc(ox, oy, 7, 0, Math.PI*2);
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.beginPath(); ctx.arc(ox, oy, 3, 0, Math.PI*2);
+  ctx.fillStyle = '#fff'; ctx.fill();
+
+  // Labels
+  ctx.fillStyle = '#4a5268'; ctx.font = '11px DM Mono,monospace';
+  ctx.fillText('f₁ →', sz-36, sz-6);
+  ctx.save(); ctx.translate(12, sz/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('f₂ ↑', 0, 0); ctx.restore();
+  [0.25,0.5,0.75].forEach(v => {
+    const x = Math.round(v*(sz-1));
+    ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fillRect(x,sz-3,1,4);
+    ctx.fillStyle='#4a5268'; ctx.font='9px DM Mono,monospace';
+    ctx.fillText(Math.round(v*100)+'%', x-8, sz+10);
+  });
+}
+
+function showView(mk, view) {
+  const views = mk==='bi' ? ['line','regimes','table'] : ['line','heatmap','table'];
+  views.forEach(v => {
+    const el = document.getElementById(mk+'-'+v);
+    if (el) el.classList.toggle('hidden', v!==view);
+  });
+  document.querySelectorAll(`#vtabs-${mk} .vt`).forEach((t,i)=>{
+    t.classList.toggle('active', views[i]===view);
+  });
+  if (view==='heatmap') setTimeout(drawHeatmap, 80);
+}
+
+/* init */
+buildManualInputs();
+</script>
+</body>
+</html>
