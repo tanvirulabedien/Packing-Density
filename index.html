@@ -7,332 +7,291 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,400;0,700;1,400&display=swap');
-
-:root {
-  --bg:        #f6f5f1;
-  --bg2:       #edebe6;
-  --surface:   #ffffff;
-  --surface2:  #f3f2ee;
-  --border:    #dddad3;
-  --border2:   #c4c0b7;
-  --green:     #1a6b4a;
-  --green-lt:  #e5f2ec;
-  --blue:      #1952a8;
-  --blue-lt:   #e7edfb;
-  --orange:    #b84a12;
-  --orange-lt: #fdeee6;
-  --text:      #191917;
-  --text2:     #56534d;
-  --text3:     #96938c;
-  --mono: 'JetBrains Mono', monospace;
-  --serif: 'Fraunces', Georgia, serif;
+:root{
+  --bg:#f6f5f1; --bg2:#eceae5; --surface:#fff; --surface2:#f3f2ed;
+  --border:#dddad2; --border2:#c3c0b6;
+  --green:#1a6b4a; --green-lt:#e5f2ec; --green-dk:#134f37;
+  --blue:#1952a8; --blue-lt:#e7edfb;
+  --orange:#b84a12; --orange-lt:#fdeee6;
+  --text:#191917; --text2:#56534d; --text3:#96938c;
+  --mono:'JetBrains Mono',monospace; --serif:'Fraunces',Georgia,serif;
 }
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--mono);
-  min-height: 100vh;
-  background-image: radial-gradient(var(--border) 1px, transparent 1px);
-  background-size: 22px 22px;
-}
-
-.app { max-width: 1120px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;
+  background-image:radial-gradient(var(--border) 1.2px,transparent 1.2px);background-size:22px 22px;}
+.app{max-width:1120px;margin:0 auto;padding:2.5rem 1.5rem 5rem;}
 
 /* HEADER */
-.header {
-  display: flex; align-items: flex-end; justify-content: space-between;
-  gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 2px solid var(--text);
-}
-.eyebrow { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--green); margin-bottom: 8px; }
-h1 { font-family: var(--serif); font-size: clamp(26px,4vw,42px); font-weight: 700; line-height: 1.05; }
-h1 em { font-style: italic; color: var(--green); }
-.subtitle { font-size: 11px; color: var(--text2); margin-top: 6px; line-height: 1.9; }
-.htag { background: var(--text); color: var(--bg); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; display: inline-block; }
-.hright { text-align: right; }
-.hright small { display: block; font-size: 10px; color: var(--text3); margin-top: 8px; line-height: 1.9; }
+.hdr{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:2px solid var(--text);}
+.eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--green);margin-bottom:8px;}
+h1{font-family:var(--serif);font-size:clamp(26px,4vw,42px);font-weight:700;line-height:1.05;}
+h1 em{font-style:italic;color:var(--green);}
+.subtitle{font-size:11px;color:var(--text2);margin-top:6px;line-height:1.9;}
+.htag{background:var(--text);color:var(--bg);font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:2px;display:inline-block;}
+.hright{text-align:right;}
+.hright small{display:block;font-size:10px;color:var(--text3);margin-top:8px;line-height:1.9;}
 
-/* MODES */
-.mode-row { display: flex; gap: 0; margin-bottom: 1.5rem; border: 1.5px solid var(--border2); border-radius: 6px; overflow: hidden; width: fit-content; background: var(--surface); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-.mode-btn { font-family: var(--mono); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; padding: 9px 22px; border: none; border-right: 1.5px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; transition: all 0.18s; }
-.mode-btn:last-child { border-right: none; }
-.mode-btn:hover { background: var(--bg2); color: var(--text); }
-.mode-btn.active { background: var(--text); color: var(--bg); }
+/* MODE */
+.mode-row{display:flex;gap:0;margin-bottom:1.5rem;border:1.5px solid var(--border2);border-radius:6px;
+  overflow:hidden;width:fit-content;background:var(--surface);box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+.mbtn{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;
+  padding:9px 22px;border:none;border-right:1.5px solid var(--border2);background:transparent;
+  color:var(--text2);cursor:pointer;transition:all 0.18s;}
+.mbtn:last-child{border-right:none;}
+.mbtn:hover{background:var(--bg2);color:var(--text);}
+.mbtn.active{background:var(--text);color:var(--bg);}
 
 /* LAYOUT */
-.two-col { display: grid; grid-template-columns: 325px 1fr; gap: 1.25rem; align-items: start; }
-@media (max-width: 820px) { .two-col { grid-template-columns: 1fr; } }
+.two-col{display:grid;grid-template-columns:325px 1fr;gap:1.25rem;align-items:start;}
+@media(max-width:820px){.two-col{grid-template-columns:1fr;}}
 
 /* CARD */
-.card { background: var(--surface); border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 14px rgba(0,0,0,0.04); }
-.card:last-child { margin-bottom: 0; }
-.card-head { padding: 9px 14px; border-bottom: 1.5px solid var(--border); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text2); background: var(--surface2); display: flex; align-items: center; justify-content: space-between; }
-.chd { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
-.card-body { padding: 16px; }
+.card{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;overflow:hidden;
+  margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,0.07),0 4px 14px rgba(0,0,0,0.04);}
+.card:last-child{margin-bottom:0;}
+.card-h{padding:9px 14px;border-bottom:1.5px solid var(--border);font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--text2);background:var(--surface2);display:flex;
+  align-items:center;justify-content:space-between;}
+.cdot{width:6px;height:6px;border-radius:50%;background:var(--green);}
+.card-b{padding:16px;}
 
 /* INPUTS */
-.isec { margin-bottom: 14px; }
-.isec:last-child { margin-bottom: 0; }
-.ilbl { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--text3); display: block; margin-bottom: 8px; }
-.prow { display: grid; grid-template-columns: 12px 1fr auto; align-items: center; gap: 10px; padding: 8px 10px; margin-bottom: 6px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 6px; transition: border-color 0.18s; }
-.prow:hover { border-color: var(--border2); }
-.dot { width: 10px; height: 10px; border-radius: 50%; }
-.d1 { background: var(--green); }
-.d2 { background: var(--blue); }
-.d3 { background: var(--orange); }
-.pname { font-size: 11px; color: var(--text2); }
-.nwrap { display: flex; align-items: center; gap: 5px; }
-input[type="number"] { background: var(--surface); border: 1.5px solid var(--border2); color: var(--text); font-family: var(--mono); font-size: 13px; padding: 5px 8px; border-radius: 5px; width: 78px; text-align: right; outline: none; transition: border-color 0.18s, box-shadow 0.18s; }
-input[type="number"]:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(26,107,74,0.13); }
-.unit { font-size: 10px; color: var(--text3); }
-.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-.field { display: flex; flex-direction: column; gap: 5px; }
-.field label { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text3); }
-.field input { width: 100%; }
-.divider { height: 1.5px; background: var(--border); margin: 14px 0; }
-
-/* BUTTON */
-.calc-btn { width: 100%; padding: 11px; margin-top: 14px; background: var(--green); color: #fff; font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(26,107,74,0.22); }
-.calc-btn:hover { background: #155c3e; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(26,107,74,0.28); }
-.calc-btn:active { transform: translateY(0); }
+.isec{margin-bottom:14px;}.isec:last-child{margin-bottom:0;}
+.ilbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:8px;}
+.prow{display:grid;grid-template-columns:12px 1fr auto;align-items:center;gap:10px;
+  padding:8px 10px;margin-bottom:6px;background:var(--bg);border:1.5px solid var(--border);
+  border-radius:6px;transition:border-color 0.18s;}
+.prow:hover{border-color:var(--border2);}
+.dot{width:10px;height:10px;border-radius:50%;}
+.d1{background:var(--green);}.d2{background:var(--blue);}.d3{background:var(--orange);}
+.pname{font-size:11px;color:var(--text2);}
+.nwrap{display:flex;align-items:center;gap:5px;}
+input[type="number"]{background:var(--surface);border:1.5px solid var(--border2);color:var(--text);
+  font-family:var(--mono);font-size:13px;padding:5px 8px;border-radius:5px;width:78px;
+  text-align:right;outline:none;transition:border-color 0.18s,box-shadow 0.18s;}
+input[type="number"]:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(26,107,74,0.13);}
+.unit{font-size:10px;color:var(--text3);}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);}
+.field input{width:100%;}
+.divider{height:1.5px;background:var(--border);margin:14px 0;}
+.calc-btn{width:100%;padding:11px;margin-top:14px;background:var(--green);color:#fff;
+  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;
+  border:none;border-radius:6px;cursor:pointer;transition:all 0.2s;
+  box-shadow:0 2px 8px rgba(26,107,74,0.22);}
+.calc-btn:hover{background:var(--green-dk);transform:translateY(-1px);box-shadow:0 4px 14px rgba(26,107,74,0.28);}
+.calc-btn:active{transform:translateY(0);}
 
 /* METRICS */
-.mgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 1rem; }
-.metric { background: var(--surface2); border: 1.5px solid var(--border); border-radius: 6px; padding: 11px 13px; transition: border-color 0.3s, background 0.3s; }
-.metric.best { border-color: var(--green); background: var(--green-lt); }
-.metric.best .mval { color: var(--green); }
-.mlbl { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text3); margin-bottom: 5px; }
-.mval { font-family: var(--serif); font-size: 20px; font-weight: 700; color: var(--text); line-height: 1; }
-.msub { font-size: 9px; color: var(--text3); margin-top: 3px; }
+.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem;}
+.metric{background:var(--surface2);border:1.5px solid var(--border);border-radius:6px;padding:11px 13px;
+  transition:border-color 0.3s,background 0.3s;}
+.metric.best{border-color:var(--green);background:var(--green-lt);}
+.metric.best .mval{color:var(--green);}
+.mlbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:5px;}
+.mval{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--text);line-height:1;}
+.msub{font-size:9px;color:var(--text3);margin-top:3px;}
 
 /* VTABS */
-.vtabs { display: flex; gap: 4px; padding: 10px 14px; border-bottom: 1.5px solid var(--border); background: var(--surface2); }
-.vtab { font-family: var(--mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; padding: 5px 12px; border-radius: 4px; border: 1.5px solid transparent; background: transparent; color: var(--text3); cursor: pointer; transition: all 0.15s; }
-.vtab:hover { color: var(--text); background: var(--bg2); }
-.vtab.active { border-color: var(--green); color: var(--green); background: var(--green-lt); }
+.vtabs{display:flex;gap:4px;padding:10px 14px;border-bottom:1.5px solid var(--border);background:var(--surface2);}
+.vtab{font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:5px 12px;
+  border-radius:4px;border:1.5px solid transparent;background:transparent;color:var(--text3);
+  cursor:pointer;transition:all 0.15s;}
+.vtab:hover{color:var(--text);background:var(--bg2);}
+.vtab.active{border-color:var(--green);color:var(--green);background:var(--green-lt);}
 
 /* CHART */
-.chart-outer { position: relative; width: 100%; height: 290px; padding: 16px; }
-.legend { display: flex; gap: 16px; flex-wrap: wrap; padding: 8px 16px; font-size: 11px; color: var(--text2); border-top: 1.5px solid var(--border); }
-.li { display: flex; align-items: center; gap: 6px; }
-.sw { width: 18px; height: 3px; border-radius: 2px; }
-.sw-g { background: var(--green); }
-.sw-o { background: repeating-linear-gradient(90deg, var(--orange) 0, var(--orange) 4px, transparent 4px, transparent 8px); }
-.optbar { font-size: 11px; color: var(--text2); padding: 9px 16px; background: var(--green-lt); border-top: 1.5px solid var(--green); line-height: 1.8; }
-.optbar em { color: var(--green); font-style: normal; font-weight: 600; }
-.cinfo { font-size: 11px; color: var(--text2); padding: 8px 16px; border-top: 1.5px solid var(--border); line-height: 1.7; background: var(--surface2); }
+.chart-outer{position:relative;width:100%;height:290px;padding:16px;}
+.legend{display:flex;gap:16px;flex-wrap:wrap;padding:8px 16px;font-size:11px;color:var(--text2);border-top:1.5px solid var(--border);}
+.li{display:flex;align-items:center;gap:6px;}
+.sw{width:18px;height:3px;border-radius:2px;}
+.sw-g{background:var(--green);}
+.sw-o{background:repeating-linear-gradient(90deg,var(--orange) 0,var(--orange) 4px,transparent 4px,transparent 8px);}
+.optbar{font-size:11px;color:var(--text2);padding:9px 16px;background:var(--green-lt);border-top:1.5px solid var(--green);line-height:1.8;}
+.optbar em{color:var(--green);font-style:normal;font-weight:600;}
+.cinfo{font-size:11px;color:var(--text2);padding:8px 16px;border-top:1.5px solid var(--border);line-height:1.7;background:var(--surface2);}
 
 /* TABLE */
-.tw { overflow-x: auto; padding: 12px; }
-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-thead tr { background: var(--surface2); }
-th { padding: 8px 12px; text-align: right; color: var(--text3); font-weight: 600; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; border-bottom: 1.5px solid var(--border2); }
-th:first-child { text-align: left; }
-td { padding: 7px 12px; text-align: right; border-bottom: 1.5px solid var(--border); color: var(--text2); }
-td:first-child { text-align: left; color: var(--text3); }
-tr:first-child td { color: var(--green); font-weight: 600; }
-tr:hover td { background: var(--green-lt); }
+.tw{overflow-x:auto;padding:12px;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead tr{background:var(--surface2);}
+th{padding:8px 12px;text-align:right;color:var(--text3);font-weight:600;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;border-bottom:1.5px solid var(--border2);}
+th:first-child{text-align:left;}
+td{padding:7px 12px;text-align:right;border-bottom:1.5px solid var(--border);color:var(--text2);}
+td:first-child{text-align:left;color:var(--text3);}
+tr:first-child td{color:var(--green);font-weight:600;}
+tr:hover td{background:var(--green-lt);}
 
 /* HEATMAP */
-.hmap-wrap { padding: 16px; display: flex; justify-content: center; }
-canvas#heatmap { border-radius: 6px; max-width: 100%; border: 1.5px solid var(--border); }
-.cbwrap { display: flex; align-items: center; gap: 10px; padding: 4px 16px 12px; font-size: 10px; color: var(--text3); }
-.cb { flex: 1; height: 10px; border-radius: 3px; background: linear-gradient(90deg, #f0f7f3, #8ecfb0, #2e9e6e, #1a6b4a); border: 1px solid var(--border); }
+.hmap-wrap{padding:16px;display:flex;justify-content:center;}
+canvas#heatmap{border-radius:6px;max-width:100%;border:1.5px solid var(--border);}
+.cbwrap{display:flex;align-items:center;gap:10px;padding:4px 16px 12px;font-size:10px;color:var(--text3);}
+.cb{flex:1;height:10px;border-radius:3px;background:linear-gradient(90deg,#f0f7f3,#8ecfb0,#2e9e6e,#1a6b4a);border:1px solid var(--border);}
 
 /* MISC */
-.rline { font-size: 12px; line-height: 2.3; }
-.mres { margin-top: 8px; font-size: 12px; min-height: 18px; }
-.note-box { background: var(--blue-lt); border: 1.5px solid #aabde8; border-radius: 6px; padding: 10px 13px; font-size: 11px; color: var(--text2); line-height: 1.8; margin-top: 10px; }
-.note-box strong { color: var(--blue); }
-.placeholder { color: var(--text3); font-size: 12px; text-align: center; padding: 60px 20px; line-height: 2.5; }
-.placeholder span { font-size: 30px; display: block; margin-bottom: 8px; opacity: 0.25; }
-.theory-row { font-size: 11px; color: var(--text2); line-height: 2; }
-.theory-eq { color: var(--green); font-size: 12px; padding-left: 10px; display: block; }
-
-@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-.anim { animation: fadeUp 0.28s ease forwards; }
-.hidden { display: none !important; }
+.rline{font-size:12px;line-height:2.4;}
+.mres{margin-top:8px;font-size:12px;min-height:18px;}
+.note-box{background:var(--blue-lt);border:1.5px solid #aabde8;border-radius:6px;padding:10px 13px;font-size:11px;color:var(--text2);line-height:1.8;margin-top:10px;}
+.note-box strong{color:var(--blue);}
+.placeholder{color:var(--text3);font-size:12px;text-align:center;padding:60px 20px;line-height:2.5;}
+.placeholder span{font-size:30px;display:block;margin-bottom:8px;opacity:0.25;}
+.eq{color:var(--green);font-size:12px;padding-left:10px;display:block;}
+.tr{font-size:11px;color:var(--text2);line-height:2;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.anim{animation:fadeUp 0.28s ease forwards;}
+.hidden{display:none!important;}
 </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- HEADER -->
-  <div class="header">
-    <div>
-      <div class="eyebrow">Powder Technology · Furnas Model</div>
-      <h1>Particle <em>Packing</em><br>Density Optimizer</h1>
-      <div class="subtitle">
-        Corrected two-regime Furnas (1931) model — plateau, LD &amp; SD regimes<br>
-        f₁ + f₂ + f₃ = 1 as <em>solid mix fractions</em> (not total volume fractions)
-      </div>
-    </div>
-    <div class="hright">
-      <div class="htag">v3 · corrected physics</div>
-      <small>
-        φ₀ = 0.64 → random close packing<br>
-        Optimum: f_large = φ₀/ρ_max · f_small = 1 − φ₀/ρ_max
-      </small>
+<div class="hdr">
+  <div>
+    <div class="eyebrow">Powder Technology · Furnas Model</div>
+    <h1>Particle <em>Packing</em><br>Density Optimizer</h1>
+    <div class="subtitle">
+      LD-only Furnas model (1931) — large-skeleton hierarchy<br>
+      f₁+f₂+f₃ = 1 as <em>solid mix fractions</em> (not total volume)
     </div>
   </div>
-
-  <!-- MODE -->
-  <div class="mode-row">
-    <button class="mode-btn active" id="btn-mono" onclick="setMode('mono')">01 // Mono</button>
-    <button class="mode-btn" id="btn-bi"   onclick="setMode('bi')">02 // Bimodal</button>
-    <button class="mode-btn" id="btn-tri"  onclick="setMode('tri')">03 // Trimodal</button>
-  </div>
-
-  <div class="two-col">
-
-    <!-- LEFT -->
-    <div>
-      <div class="card">
-        <div class="card-head"><span>Parameters</span><div class="chd"></div></div>
-        <div class="card-body">
-
-          <div class="isec">
-            <span class="ilbl">Particle sizes</span>
-            <div class="prow">
-              <div class="dot d1"></div><div class="pname">Component 1</div>
-              <div class="nwrap"><input type="number" id="d1" value="80" min="0.001" step="any"><span class="unit">µm</span></div>
-            </div>
-            <div class="prow" id="row-d2" style="display:none">
-              <div class="dot d2"></div><div class="pname">Component 2</div>
-              <div class="nwrap"><input type="number" id="d2" value="5" min="0.001" step="any"><span class="unit">µm</span></div>
-            </div>
-            <div class="prow" id="row-d3" style="display:none">
-              <div class="dot d3"></div><div class="pname">Component 3</div>
-              <div class="nwrap"><input type="number" id="d3" value="1" min="0.001" step="any"><span class="unit">µm</span></div>
-            </div>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="isec">
-            <span class="ilbl">Packing parameters</span>
-            <div class="row2">
-              <div class="field"><label>φ₀ (mono RCP)</label><input type="number" id="phi0" value="0.64" min="0.40" max="0.74" step="0.01"></div>
-              <div class="field"><label>Sweep steps</label><input type="number" id="steps" value="500" min="100" max="2000" step="100"></div>
-            </div>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="isec" id="manual-sec" style="display:none">
-            <span class="ilbl">Evaluate a specific blend (sum = 1)</span>
-            <div id="manual-inputs"></div>
-            <div class="mres" id="manual-result"></div>
-          </div>
-
-          <button class="calc-btn" onclick="compute()">▶ Calculate optimal packing</button>
-
-          <div class="note-box">
-            <strong>Note on fractions:</strong> f₁, f₂, f₃ are the proportions of each particle size in the <em>solid mixture</em>. They represent composition of the blended powder, not fractions of total volume (which includes voids).
-          </div>
-        </div>
-      </div>
-
-      <!-- Size ratios -->
-      <div class="card" id="ratio-panel" style="display:none">
-        <div class="card-head"><span>Size ratios  r = d_small/d_large</span><div class="chd"></div></div>
-        <div class="card-body" id="ratio-body"></div>
-      </div>
-
-      <!-- Model reference -->
-      <div class="card">
-        <div class="card-head"><span>Model — correct Furnas regimes</span><div class="chd"></div></div>
-        <div class="card-body">
-          <div class="theory-row">ρ_max = φ₀ + (1−φ₀)·φ₀·u</div>
-          <div class="theory-row">u = 1 − r  (interaction, 0→1)</div>
-          <div class="theory-row">g* = φ₀ / ρ_max  (optimal large fraction)</div>
-          <div class="divider"></div>
-          <div class="theory-row">SD regime  (f_large ≤ 1−g*):</div>
-          <span class="theory-eq">ρ = φ₀ / (1 − f_large)</span>
-          <div class="theory-row" style="margin-top:6px">Plateau  (1−g* &lt; f_large &lt; g*):</div>
-          <span class="theory-eq">ρ = ρ_max</span>
-          <div class="theory-row" style="margin-top:6px">LD regime  (f_large ≥ g*):</div>
-          <span class="theory-eq">ρ = φ₀ / f_large</span>
-          <div class="divider"></div>
-          <div class="theory-row" style="color:var(--text3)">φ₀ = 0.64 spheres · 0.60 irregular · 0.74 ordered</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- RIGHT -->
-    <div id="results-col">
-      <div class="card">
-        <div class="card-head"><span>Results</span><div class="chd"></div></div>
-        <div class="placeholder">
-          <span>◎</span>
-          Set particle sizes and click<br>
-          <strong>Calculate optimal packing</strong>
-        </div>
-      </div>
-    </div>
-
+  <div class="hright">
+    <div class="htag">v4 · physically correct</div>
+    <small>
+      φ₀ = 0.64 → random close packing<br>
+      Optimum: f_large = φ₀/ρ_max (large-dominant)
+    </small>
   </div>
 </div>
 
+<div class="mode-row">
+  <button class="mbtn active" id="btn-mono" onclick="setMode('mono')">01 // Mono</button>
+  <button class="mbtn" id="btn-bi"   onclick="setMode('bi')">02 // Bimodal</button>
+  <button class="mbtn" id="btn-tri"  onclick="setMode('tri')">03 // Trimodal</button>
+</div>
+
+<div class="two-col">
+  <!-- LEFT -->
+  <div>
+    <div class="card">
+      <div class="card-h"><span>Parameters</span><div class="cdot"></div></div>
+      <div class="card-b">
+
+        <div class="isec">
+          <span class="ilbl">Particle sizes</span>
+          <div class="prow">
+            <div class="dot d1"></div><span class="pname">Component 1</span>
+            <div class="nwrap"><input type="number" id="d1" value="80" min="0.001" step="any"><span class="unit">µm</span></div>
+          </div>
+          <div class="prow" id="row-d2" style="display:none">
+            <div class="dot d2"></div><span class="pname">Component 2</span>
+            <div class="nwrap"><input type="number" id="d2" value="5" min="0.001" step="any"><span class="unit">µm</span></div>
+          </div>
+          <div class="prow" id="row-d3" style="display:none">
+            <div class="dot d3"></div><span class="pname">Component 3</span>
+            <div class="nwrap"><input type="number" id="d3" value="1" min="0.001" step="any"><span class="unit">µm</span></div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="isec">
+          <span class="ilbl">Packing parameters</span>
+          <div class="row2">
+            <div class="field"><label>φ₀ (mono RCP)</label><input type="number" id="phi0" value="0.64" min="0.40" max="0.74" step="0.01"></div>
+            <div class="field"><label>Sweep steps</label><input type="number" id="steps" value="500" min="100" max="2000" step="100"></div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="isec" id="manual-sec" style="display:none">
+          <span class="ilbl">Evaluate specific blend (sum = 1)</span>
+          <div id="manual-inputs"></div>
+          <div class="mres" id="manual-result"></div>
+        </div>
+
+        <button class="calc-btn" onclick="compute()">▶ Calculate optimal packing</button>
+        <div class="note-box"><strong>Fractions:</strong> f₁, f₂, f₃ sum to 1 and describe the <em>solid blend composition</em> — not fractions of total volume (which includes void space).</div>
+      </div>
+    </div>
+
+    <div class="card" id="ratio-panel" style="display:none">
+      <div class="card-h"><span>Size ratios  r = d_small/d_large</span><div class="cdot"></div></div>
+      <div class="card-b" id="ratio-body"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><span>Model — LD-only Furnas</span><div class="cdot"></div></div>
+      <div class="card-b">
+        <div class="tr">ρ_max = φ₀ + (1−φ₀)·φ₀·u  ,  u = 1−r</div>
+        <div class="tr">g* = φ₀/ρ_max  (optimal large fraction)</div>
+        <div class="tr" style="margin-top:8px;">LD regime  (f_large ≥ g*):</div>
+        <span class="eq">ρ = φ₀ / f_large</span>
+        <div class="tr" style="margin-top:6px;">Below threshold  (f_large &lt; g*):</div>
+        <span class="eq">ρ = φ₀ + (ρ_max − φ₀)·(f_large/g*)  [linear ramp]</span>
+        <div class="divider"></div>
+        <div class="tr" style="color:var(--text3)">Trimodal: hierarchical — {large+medium} binary first, then + small.</div>
+        <div class="tr" style="color:var(--text3);margin-top:4px">φ₀: 0.64 spheres · 0.60 irregular · 0.74 ordered</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div id="results-col">
+    <div class="card">
+      <div class="card-h"><span>Results</span><div class="cdot"></div></div>
+      <div class="placeholder"><span>◎</span>Set particle sizes and click<br><strong>Calculate optimal packing</strong></div>
+    </div>
+  </div>
+</div>
+</div>
+
 <script>
-// ═══════════════════════════════════════════════════════════════
-//  CORRECT FURNAS TWO-REGIME MODEL (verified analytically)
+// ═══════════════════════════════════════════════════════════════════
+//  CORRECT LD-ONLY FURNAS MODEL
+//  ─────────────────────────────────────────────────────────────────
+//  Physical basis: large particles form skeleton, small fill voids.
+//  Small CANNOT fit into voids smaller than themselves.
+//  Therefore only LD (large-dominant) regime is physically meaningful.
 //
-//  Binary (g = f_large = large solid fraction, 1-g = f_small):
-//  r = d_small/d_large,  u = 1-r
+//  Binary (dL > dS, gL = large solid fraction):
+//    r = dS/dL,  u = 1−r
+//    ρ_max = φ₀ + (1−φ₀)·φ₀·u       (max packing at optimal fraction)
+//    g*    = φ₀ / ρ_max               (optimal large fraction)
 //
-//  ρ_max = φ₀ + (1−φ₀)·φ₀·u        ← max achievable packing
-//  g*    = φ₀ / ρ_max                ← large fraction at optimum
+//    if gL ≥ g*:  ρ = φ₀ / gL          (LD regime — large skeleton)
+//    if gL < g*:  ρ = φ₀ + (ρ_max−φ₀)·(gL/g*)   (linear ramp)
 //
-//  SD regime  (g ≤ 1-g*): small skeleton, large fills voids
-//    ρ = φ₀ / (1 - g)
-//    at g=0:    ρ = φ₀          ✓
-//    at g=1-g*: ρ = φ₀/(1-(1-g*)) = φ₀/g* = ρ_max  ✓
+//  VERIFIED (φ₀=0.64, 80µm+1µm):
+//    ρ_max = 86.75%,  g* = 73.8%
+//    Sweep optimum at g(80µm) = 73.8%  ✓
 //
-//  PLATEAU    (1-g* < g < g*): both modes can dominate
-//    ρ = ρ_max
-//    (For ideal r→0 this is exact; for finite r it's the upper bound)
-//
-//  LD regime  (g ≥ g*): large skeleton, small fills voids
-//    ρ = φ₀ / g
-//    at g=g*: ρ = φ₀/g* = ρ_max  ✓
-//    at g=1:  ρ = φ₀              ✓
-//
-//  For finite r: plateau packing is reduced by factor u=1-r.
-//  ρ_plateau(g) = ρ_max  (we keep this exact; the reduction is already
-//  captured in ρ_max = φ₀+(1-φ₀)·φ₀·u rather than φ₀+(1-φ₀)·φ₀)
-//
-//  VERIFIED for φ₀=0.64, d_L=80µm, d_S=1µm (r=0.0125, u=0.9875):
-//    ρ_max = 86.75%,  g* = 73.8%,  plateau: 26.2% to 73.8% large
-// ═══════════════════════════════════════════════════════════════
+//  Trimodal: hierarchical application
+//    Step 1: binary {sz[0]+sz[1]} → rho_12 = f(g12, sz[0], sz[1])
+//    Step 2: binary {sz[0]+sz[1]} as "large" + sz[2] as "small"
+//            using rho_12 in place of φ₀ for the "large" component
+//    VERIFIED (80µm+5µm+1µm):
+//      Optimum: f1=68.8%, f2=23.2%, f3=7.9%, ρ=92.97%  ✓
+// ═══════════════════════════════════════════════════════════════════
 
-let mode = 'mono';
-let chartInst = null;
-let sHeat = null, sHeatSteps = 200, sBF1 = 0, sBF2 = 0, sPhi0 = 0.64, sBRho = 0.64;
+let mode='mono', chartInst=null;
+let sHeat=null, sHS=200, sBF1=0, sBF2=0, sPhi0=0.64, sBRho=0.64;
 
-function bi2(phi0, dL, dS, gL) {
-  const r      = Math.min(dL, dS) / Math.max(dL, dS);
-  const u      = 1 - r;
-  const rhoMax = Math.min(0.975, phi0 + (1 - phi0) * phi0 * u);
-  const gStar  = phi0 / rhoMax;   // large fraction at optimum
-  const gStarS = 1 - gStar;       // small fraction threshold
-
+function binaryLD(phi0, dL, dS, gL) {
+  // LD-only binary packing. gL = large solid fraction (0..1).
+  const r = Math.min(dL,dS)/Math.max(dL,dS);
+  const u = 1 - r;
+  const rhoMax = Math.min(0.975, phi0 + (1-phi0)*phi0*u);
+  const gStar  = phi0 / rhoMax;
   let rho;
   if (gL >= gStar) {
-    // LD regime: large skeleton
-    rho = phi0 / gL;
-  } else if (gL <= gStarS) {
-    // SD regime: small skeleton
-    rho = phi0 / (1 - gL);
+    rho = phi0 / gL;                                  // LD regime
   } else {
-    // Plateau: ρ = ρ_max
-    rho = rhoMax;
+    rho = phi0 + (rhoMax - phi0) * (gL / gStar);     // linear ramp
   }
-  return Math.max(phi0, Math.min(0.975, rho));
+  return Math.max(phi0*0.999, Math.min(0.975, rho));
 }
 
 function furnasRho(phi0, sizes, fracs) {
@@ -340,147 +299,86 @@ function furnasRho(phi0, sizes, fracs) {
   if (n === 1) return phi0;
 
   // Sort descending by size
-  const pairs = sizes.map((s, i) => ({ s, f: fracs[i] })).sort((a, b) => b.s - a.s);
-  const sz = pairs.map(p => p.s);
-  const f  = pairs.map(p => p.f);
+  const pairs = sizes.map((s,i)=>({s,f:fracs[i]})).sort((a,b)=>b.s-a.s);
+  const sz = pairs.map(p=>p.s);
+  const f  = pairs.map(p=>p.f);
 
-  if (n === 2) return bi2(phi0, sz[0], sz[1], f[0]);
+  if (n === 2) return binaryLD(phi0, sz[0], sz[1], f[0]);
 
-  // Trimodal: dominant-phase approach
-  // For each component i as skeleton: compute packing with all smaller components as fillers
-  // rho_dom_i = phi0 / f_i_abs   where f_i_abs = f[i] * rho (the self-consistent way)
-  // Simplified: use the binary formula hierarchically for each dominant pair,
-  // then take the maximum (upper envelope).
-  let best = phi0;
-  for (let dom = 0; dom < n; dom++) {
-    // Treat component dom as skeleton; all components with smaller size fill voids
-    // The "effective" filler fraction = sum of all smaller fillers' solid fracs
-    let filler_total = 0;
-    for (let j = 0; j < n; j++) {
-      if (j !== dom && sz[j] < sz[dom]) {
-        filler_total += f[j];
-      }
-    }
-    // Use binary formula: dom as large, fillers combined as small
-    // Combined size ratio: use harmonic mean of interactions
-    let u_eff = 0;
-    if (filler_total > 0) {
-      for (let j = 0; j < n; j++) {
-        if (j !== dom && sz[j] < sz[dom]) {
-          const u_j = 1 - sz[j] / sz[dom];
-          u_eff += (f[j] / filler_total) * u_j;
-        }
-      }
-    }
-    const gL = f[dom];
-    const gS = filler_total;
-    const gNorm = gL + gS > 0 ? gL / (gL + gS) : 1;
-    const rho_max_eff = Math.min(0.975, phi0 + (1 - phi0) * phi0 * u_eff);
-    const gStar = phi0 / rho_max_eff;
-    let rho;
-    if (gNorm >= gStar) {
-      rho = phi0 / gNorm;
-    } else if (gNorm <= 1 - gStar) {
-      rho = phi0 / (1 - gNorm);
-    } else {
-      rho = rho_max_eff;
-    }
-    if (rho > best) best = rho;
+  // Trimodal: hierarchical
+  const f01 = f[0]+f[1];
+  if (f01 < 1e-9) return phi0;
+
+  // Step 1: inner binary {sz[0], sz[1]}
+  const g12   = f[0] / f01;
+  const rho12 = binaryLD(phi0, sz[0], sz[1], g12);
+
+  // Step 2: outer binary  {sz[0]+sz[1]} vs sz[2]
+  // Use rho12 as the effective φ₀ of the "large" component
+  const r23   = sz[2] / sz[1];  // size ratio: smallest vs next-smallest
+  const u23   = 1 - r23;
+  const rhoMax_final = Math.min(0.975, rho12 + (1-rho12)*phi0*u23);
+  const gStar_final  = rho12 / rhoMax_final;
+
+  let rho;
+  if (f01 >= gStar_final) {
+    rho = rho12 / f01;
+  } else {
+    rho = phi0 + (rhoMax_final - phi0) * (f01 / gStar_final);
   }
-
-  const triMax = 1 - Math.pow(1 - phi0, 3);
-  return Math.min(triMax * 0.985, Math.max(phi0, best));
+  return Math.max(phi0*0.999, Math.min(0.975, rho));
 }
 
-// ── helpers ───────────────────────────────────────────────────
+// ── UI ────────────────────────────────────────────────────────
 function setMode(m) {
   mode = m;
-  ['mono','bi','tri'].forEach(x => document.getElementById('btn-'+x).classList.toggle('active', x===m));
-  document.getElementById('row-d2').style.display = (m==='bi'||m==='tri') ? '' : 'none';
-  document.getElementById('row-d3').style.display = m==='tri' ? '' : 'none';
-  document.getElementById('manual-sec').style.display = m!=='mono' ? '' : 'none';
-  document.getElementById('ratio-panel').style.display = 'none';
+  ['mono','bi','tri'].forEach(x=>document.getElementById('btn-'+x).classList.toggle('active',x===m));
+  document.getElementById('row-d2').style.display=(m==='bi'||m==='tri')?'':'none';
+  document.getElementById('row-d3').style.display=m==='tri'?'':'none';
+  document.getElementById('manual-sec').style.display=m!=='mono'?'':'none';
+  document.getElementById('ratio-panel').style.display='none';
   buildManual();
 }
-
-function buildManual() {
-  const div = document.getElementById('manual-inputs');
-  if (mode==='mono') { div.innerHTML=''; return; }
-  const n = mode==='bi' ? 2 : 3;
-  div.innerHTML = `<div class="row2" style="${n===3?'grid-template-columns:1fr 1fr 1fr':''}">${
-    ['f₁','f₂','f₃'].slice(0,n).map((l,i) =>
+function buildManual(){
+  const div=document.getElementById('manual-inputs');
+  if(mode==='mono'){div.innerHTML='';return;}
+  const n=mode==='bi'?2:3;
+  div.innerHTML=`<div class="row2" style="${n===3?'grid-template-columns:1fr 1fr 1fr':''}">${
+    ['f₁','f₂','f₃'].slice(0,n).map((l,i)=>
       `<div class="field"><label>${l} (0–1)</label>
        <input type="number" id="mf${i+1}" min="0" max="1" step="0.01" placeholder="—" oninput="evalManual()"></div>`
-    ).join('')
-  }</div>`;
+    ).join('')}</div>`;
 }
-
-function evalManual() {
-  const phi0  = pf('phi0');
-  const sizes = getSizes();
-  const mf    = [1,2,3].slice(0,sizes.length).map(i => { const e=document.getElementById('mf'+i); return e?parseFloat(e.value):NaN; });
-  const res   = document.getElementById('manual-result');
-  if (mf.some(isNaN)) { res.textContent=''; return; }
-  const sum = mf.reduce((a,b)=>a+b,0);
-  if (Math.abs(sum-1)>0.015) { res.style.color='var(--orange)'; res.textContent=`⚠ sum=${sum.toFixed(3)}, must = 1.0`; return; }
-  const rho = furnasRho(phi0, sizes, mf);
+function evalManual(){
+  const phi0=pf('phi0'), sizes=getSizes();
+  const mf=[1,2,3].slice(0,sizes.length).map(i=>{const e=document.getElementById('mf'+i);return e?parseFloat(e.value):NaN;});
+  const res=document.getElementById('manual-result');
+  if(mf.some(isNaN)){res.textContent='';return;}
+  const sum=mf.reduce((a,b)=>a+b,0);
+  if(Math.abs(sum-1)>0.015){res.style.color='var(--orange)';res.textContent=`⚠ sum=${sum.toFixed(3)}, must = 1.0`;return;}
+  const rho=furnasRho(phi0,sizes,mf);
   res.style.color='var(--green)';
   res.textContent=`→ Packing: ${(rho*100).toFixed(3)}%   Void: ${((1-rho)*100).toFixed(3)}%`;
 }
-
-function pf(id) { return parseFloat(document.getElementById(id).value)||0; }
-function pi(id) { return parseInt(document.getElementById(id).value)||500; }
-
-function getSizes() {
-  const d1=pf('d1')||80; if(mode==='mono') return [d1];
-  const d2=pf('d2')||5;  if(mode==='bi')  return [d1,d2];
-  const d3=pf('d3')||1;  return [d1,d2,d3];
+function pf(id){return parseFloat(document.getElementById(id).value)||0;}
+function pi(id){return parseInt(document.getElementById(id).value)||500;}
+function getSizes(){
+  const d1=pf('d1')||80; if(mode==='mono')return[d1];
+  const d2=pf('d2')||5;  if(mode==='bi')return[d1,d2];
+  const d3=pf('d3')||1;  return[d1,d2,d3];
 }
-
-function setRC(html) { document.getElementById('results-col').innerHTML=html; }
-
-function mGrid(items) {
-  return `<div class="mgrid">${items.map(m=>`<div class="metric${m.b?' best':''}">
+function setRC(html){document.getElementById('results-col').innerHTML=html;}
+function mGrid(items){
+  return`<div class="mgrid">${items.map(m=>`<div class="metric${m.b?' best':''}">
     <div class="mlbl">${m.l}</div><div class="mval">${m.v}</div>
     ${m.s?`<div class="msub">${m.s}</div>`:''}</div>`).join('')}</div>`;
 }
 
-function chartCfg(labels, datasets, xLabel, yLabel) {
-  return {
-    type: 'line',
-    data: { labels, datasets },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { mode: 'index', intersect: false }
-      },
-      scales: {
-        x: {
-          title: { display: true, text: xLabel, color: '#96938c', font: { family: 'JetBrains Mono', size: 11 } },
-          ticks: { color: '#96938c', font: { family: 'JetBrains Mono', size: 10 }, maxTicksLimit: 10 },
-          grid:  { color: 'rgba(0,0,0,0.05)' }
-        },
-        y: {
-          title: { display: true, text: yLabel, color: '#96938c', font: { family: 'JetBrains Mono', size: 11 } },
-          ticks: { color: '#96938c', font: { family: 'JetBrains Mono', size: 10 } },
-          grid:  { color: 'rgba(0,0,0,0.05)' }
-        }
-      }
-    }
-  };
-}
-
-// ── compute ───────────────────────────────────────────────────
-function compute() {
-  const phi0  = pf('phi0')||0.64;
-  const steps = Math.max(100, pi('steps'));
-  const sizes = getSizes();
-
-  if (mode !== 'mono') {
-    const sorted = [...sizes].sort((a,b)=>b-a);
-    let html = '';
-    for (let i=0; i<sorted.length-1; i++) {
+function compute(){
+  const phi0=pf('phi0')||0.64, steps=Math.max(100,pi('steps')), sizes=getSizes();
+  if(mode!=='mono'){
+    const sorted=[...sizes].sort((a,b)=>b-a); let html='';
+    for(let i=0;i<sorted.length-1;i++){
       const r=sorted[i+1]/sorted[i];
       const q=r<0.05?'Excellent':r<0.1?'Very good':r<0.2?'Good':r<0.4?'Moderate':'Poor';
       const c=r<0.1?'var(--green)':r<0.3?'var(--blue)':'var(--orange)';
@@ -492,82 +390,70 @@ function compute() {
     document.getElementById('ratio-panel').style.display='';
   } else document.getElementById('ratio-panel').style.display='none';
 
-  if      (mode==='mono') doMono(phi0, sizes);
-  else if (mode==='bi')   doBi(phi0, sizes, steps);
-  else                    doTri(phi0, sizes, steps);
+  if(mode==='mono')doMono(phi0,sizes);
+  else if(mode==='bi')doBi(phi0,sizes,steps);
+  else doTri(phi0,sizes,steps);
 }
 
-function doMono(phi0, sizes) {
-  const d1=sizes[0];
-  const biMax=phi0*(2-phi0), triMax=1-Math.pow(1-phi0,3);
+function doMono(phi0,sizes){
+  const d1=sizes[0], biMax=phi0*(2-phi0), triMax=1-Math.pow(1-phi0,3);
   setRC(`<div class="card anim">
-    <div class="card-head"><span>Monodisperse · ${d1} µm</span><div class="chd"></div></div>
-    <div class="card-body">
-      ${mGrid([
-        {l:'Packing density',v:(phi0*100).toFixed(2)+'%',b:true},
-        {l:'Void fraction',v:((1-phi0)*100).toFixed(2)+'%'},
-        {l:'Particle size',v:d1+' µm'},
-      ])}
+    <div class="card-h"><span>Monodisperse · ${d1} µm</span><div class="cdot"></div></div>
+    <div class="card-b">
+      ${mGrid([{l:'Packing density',v:(phi0*100).toFixed(2)+'%',b:true},{l:'Void fraction',v:((1-phi0)*100).toFixed(2)+'%'},{l:'Particle size',v:d1+' µm'}])}
       <div style="font-size:12px;color:var(--text2);line-height:2;margin-top:8px;">
-        Packing = φ₀ for single-component system.<br>
-        Ideal bimodal max: <strong style="color:var(--green)">${(biMax*100).toFixed(2)}%</strong>
-        at f₁ = ${(phi0/(2-phi0)*100).toFixed(1)}% large / ${((1-phi0/(2-phi0))*100).toFixed(1)}% small<br>
-        Ideal trimodal max: <strong style="color:var(--green)">${(triMax*100).toFixed(2)}%</strong>
+        Packing = φ₀ for single component.<br>
+        Bimodal max (ideal r→0): <strong style="color:var(--green)">${(biMax*100).toFixed(2)}%</strong>
+        at f_large = ${(1/(2-phi0)*100).toFixed(1)}%<br>
+        Trimodal max (ideal): <strong style="color:var(--green)">${(triMax*100).toFixed(2)}%</strong>
       </div>
     </div></div>`);
 }
 
-function doBi(phi0, sizes, steps) {
+function doBi(phi0,sizes,steps){
   const [d1,d2]=sizes;
   const labels=[],dens=[],voids=[],all=[];
   let bestRho=0,bestF1=0;
-
-  for (let i=0; i<=steps; i++) {
+  for(let i=0;i<=steps;i++){
     const g=i/steps, rho=furnasRho(phi0,[d1,d2],[g,1-g]);
     labels.push((g*100).toFixed(1));
     dens.push(+(rho*100).toFixed(4));
     voids.push(+((1-rho)*100).toFixed(4));
     all.push({f1:g,f2:1-g,rho});
-    if (rho>bestRho){bestRho=rho;bestF1=g;}
+    if(rho>bestRho){bestRho=rho;bestF1=g;}
   }
   all.sort((a,b)=>b.rho-a.rho);
-
-  const r=Math.min(d1,d2)/Math.max(d1,d2), u=1-r;
-  const rhoMax=Math.min(0.975,phi0+(1-phi0)*phi0*u);
-  const gStar=(phi0/rhoMax)*100;
   const top=all.slice(0,12);
+  const r=Math.min(d1,d2)/Math.max(d1,d2),u=1-r;
+  const rhoMax=Math.min(0.975,phi0+(1-phi0)*phi0*u),gStar=phi0/rhoMax;
 
   setRC(`<div class="card anim">
-    <div class="card-head"><span>Bimodal · ${d1} µm + ${d2} µm</span><div class="chd"></div></div>
-    <div class="card-body">
+    <div class="card-h"><span>Bimodal · ${d1} µm + ${d2} µm</span><div class="cdot"></div></div>
+    <div class="card-b">
       ${mGrid([
         {l:'Optimal packing',v:(bestRho*100).toFixed(2)+'%',b:true},
         {l:'Void fraction',v:((1-bestRho)*100).toFixed(2)+'%'},
         {l:'Gain vs mono',v:'+'+((bestRho-phi0)*100).toFixed(2)+' pts'},
-        {l:'f₁ large (${d1}µm)',v:(bestF1*100).toFixed(1)+'%',s:'solid fraction'},
-        {l:'f₂ small (${d2}µm)',v:((1-bestF1)*100).toFixed(1)+'%',s:'solid fraction'},
+        {l:'f₁ large (${d1}µm)',v:(bestF1*100).toFixed(1)+'%',s:'optimal solid fraction'},
+        {l:'f₂ small (${d2}µm)',v:((1-bestF1)*100).toFixed(1)+'%',s:'optimal solid fraction'},
         {l:'Size ratio r',v:r.toFixed(5),s:'d_small / d_large'},
       ])}
       <div style="font-size:11px;color:var(--text3);margin-top:4px;line-height:1.8;">
-        ρ_max = <strong>${(rhoMax*100).toFixed(2)}%</strong> |
-        g* = <strong>${gStar.toFixed(1)}%</strong> large |
-        Plateau: <strong>${(100-gStar).toFixed(1)}% – ${gStar.toFixed(1)}%</strong> large all give ρ_max
+        ρ_max = <strong>${(rhoMax*100).toFixed(2)}%</strong> at f_large = <strong>${(gStar*100).toFixed(1)}%</strong>
+        (= φ₀/ρ_max)
       </div>
     </div>
     <div class="vtabs" id="vt-bi">
       <button class="vtab active" onclick="sv('bi','line')">Sweep curve</button>
-      <button class="vtab"        onclick="sv('bi','table')">Top 12 blends</button>
+      <button class="vtab" onclick="sv('bi','table')">Top 12 blends</button>
     </div>
     <div id="bi-line">
-      <div class="chart-outer"><canvas id="biC" role="img" aria-label="Bimodal packing sweep"></canvas></div>
+      <div class="chart-outer"><canvas id="biC"></canvas></div>
       <div class="legend">
         <div class="li"><div class="sw sw-g"></div>Packing density (%)</div>
         <div class="li"><div class="sw sw-o"></div>Void fraction (%)</div>
       </div>
-      <div class="optbar">
-        Optimal plateau: <em>${(100-gStar).toFixed(1)}%</em> to <em>${gStar.toFixed(1)}%</em> large
-        (any blend in this range) → ρ = <em>${(bestRho*100).toFixed(3)}%</em>
-      </div>
+      <div class="optbar">Optimum: f₁ = <em>${(bestF1*100).toFixed(1)}%</em> (${d1}µm) · f₂ = <em>${((1-bestF1)*100).toFixed(1)}%</em> (${d2}µm) → ρ = <em>${(bestRho*100).toFixed(3)}%</em></div>
     </div>
     <div id="bi-table" class="hidden">
       <div class="tw"><table>
@@ -578,44 +464,48 @@ function doBi(phi0, sizes, steps) {
   </div>`);
 
   setTimeout(()=>{
-    if (chartInst){chartInst.destroy();chartInst=null;}
+    if(chartInst){chartInst.destroy();chartInst=null;}
     const ctx=document.getElementById('biC'); if(!ctx)return;
-    const cfg=chartCfg(labels,[
-      {data:dens,  borderColor:'#1a6b4a',backgroundColor:'rgba(26,107,74,0.07)',fill:true, tension:0.25,pointRadius:0,borderWidth:2},
-      {data:voids, borderColor:'#b84a12',backgroundColor:'transparent',          fill:false,tension:0.25,pointRadius:0,borderWidth:1.5,borderDash:[5,3]},
-    ], `f₁ — large fraction of ${d1}µm in solid mix (%)`, 'Value (%)');
-    cfg.options.plugins.tooltip.callbacks={label:c=>`${c.datasetIndex===0?'Packing':'Void'}: ${c.parsed.y.toFixed(3)}%`};
-    chartInst=new Chart(ctx,cfg);
+    chartInst=new Chart(ctx,{type:'line',
+      data:{labels,datasets:[
+        {data:dens,borderColor:'#1a6b4a',backgroundColor:'rgba(26,107,74,0.07)',fill:true,tension:0.25,pointRadius:0,borderWidth:2},
+        {data:voids,borderColor:'#b84a12',fill:false,tension:0.25,pointRadius:0,borderWidth:1.5,borderDash:[5,3]},
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>`${c.datasetIndex===0?'Packing':'Void'}: ${c.parsed.y.toFixed(3)}%`}}},
+        scales:{
+          x:{title:{display:true,text:`f₁ — fraction of ${d1}µm in solid mix (%)`,color:'#96938c',font:{family:'JetBrains Mono',size:11}},ticks:{color:'#96938c',font:{family:'JetBrains Mono',size:10},maxTicksLimit:10},grid:{color:'rgba(0,0,0,0.05)'}},
+          y:{title:{display:true,text:'Value (%)',color:'#96938c',font:{family:'JetBrains Mono',size:11}},ticks:{color:'#96938c',font:{family:'JetBrains Mono',size:10}},grid:{color:'rgba(0,0,0,0.05)'}}
+        }
+      }
+    });
   },60);
 }
 
-function doTri(phi0, sizes, steps) {
+function doTri(phi0,sizes,steps){
   const [d1,d2,d3]=sizes;
   let bestRho=0,bestF1=0,bestF2=0,bestF3=0;
-  const f1ax=[],bestPF1=[];
-  const all=[],heat=[];
+  const f1ax=[],bestPF1=[],all=[],heat=[];
 
-  for (let i=0;i<=steps;i++){
-    const f1=i/steps; let rowBest=0;
-    for (let j=0;j<=steps-i;j++){
-      const f2=j/steps, f3=Math.max(0,1-f1-f2);
-      if(f1+f2>1.001) continue;
+  for(let i=0;i<=steps;i++){
+    const f1=i/steps; let rowB=0;
+    for(let j=0;j<=steps-i;j++){
+      const f2=j/steps,f3=Math.max(0,1-f1-f2);
+      if(f1+f2>1.001)continue;
       const rho=furnasRho(phi0,[d1,d2,d3],[f1,f2,f3]);
       all.push({f1,f2,f3,rho}); heat.push({f1,f2,f3,rho});
-      if(rho>rowBest) rowBest=rho;
+      if(rho>rowB)rowB=rho;
       if(rho>bestRho){bestRho=rho;bestF1=f1;bestF2=f2;bestF3=f3;}
     }
     f1ax.push((f1*100).toFixed(1));
-    bestPF1.push(+(rowBest*100).toFixed(4));
+    bestPF1.push(+(rowB*100).toFixed(4));
   }
-
   all.sort((a,b)=>b.rho-a.rho);
-  const top=all.slice(0,12);
-  sHeat=heat; sHeatSteps=steps; sBF1=bestF1; sBF2=bestF2; sPhi0=phi0; sBRho=bestRho;
+  sHeat=heat;sHS=steps;sBF1=bestF1;sBF2=bestF2;sPhi0=phi0;sBRho=bestRho;
 
   setRC(`<div class="card anim">
-    <div class="card-head"><span>Trimodal · ${d1}µm + ${d2}µm + ${d3}µm</span><div class="chd"></div></div>
-    <div class="card-body">
+    <div class="card-h"><span>Trimodal · ${d1}µm + ${d2}µm + ${d3}µm</span><div class="cdot"></div></div>
+    <div class="card-b">
       ${mGrid([
         {l:'Optimal packing',v:(bestRho*100).toFixed(2)+'%',b:true},
         {l:'Void fraction',v:((1-bestRho)*100).toFixed(2)+'%'},
@@ -627,28 +517,23 @@ function doTri(phi0, sizes, steps) {
     </div>
     <div class="vtabs" id="vt-tri">
       <button class="vtab active" onclick="sv('tri','line')">f₁ sweep</button>
-      <button class="vtab"        onclick="sv('tri','heatmap')">Heatmap (f₁ vs f₂)</button>
-      <button class="vtab"        onclick="sv('tri','table')">Top 12 blends</button>
+      <button class="vtab" onclick="sv('tri','heatmap')">Heatmap (f₁ vs f₂)</button>
+      <button class="vtab" onclick="sv('tri','table')">Top 12 blends</button>
     </div>
     <div id="tri-line">
-      <div class="chart-outer"><canvas id="triC" role="img" aria-label="Trimodal f1 sweep"></canvas></div>
+      <div class="chart-outer"><canvas id="triC"></canvas></div>
       <div class="legend"><div class="li"><div class="sw sw-g"></div>Best packing per f₁ (optimized over f₂, f₃)</div></div>
-      <div class="optbar">
-        Optimum: f₁=<em>${(bestF1*100).toFixed(1)}%</em>
-        · f₂=<em>${(bestF2*100).toFixed(1)}%</em>
-        · f₃=<em>${(bestF3*100).toFixed(1)}%</em>
-        → ρ=<em>${(bestRho*100).toFixed(3)}%</em>
-      </div>
+      <div class="optbar">Optimum: f₁=<em>${(bestF1*100).toFixed(1)}%</em> · f₂=<em>${(bestF2*100).toFixed(1)}%</em> · f₃=<em>${(bestF3*100).toFixed(1)}%</em> → ρ=<em>${(bestRho*100).toFixed(3)}%</em></div>
     </div>
     <div id="tri-heatmap" class="hidden">
       <div class="hmap-wrap"><canvas id="heatmap"></canvas></div>
       <div class="cbwrap"><span>${(phi0*100).toFixed(0)}%</span><div class="cb"></div><span>${(bestRho*100).toFixed(1)}%</span></div>
-      <div class="cinfo">X = f₁ (${d1}µm) · Y = f₂ (${d2}µm) · f₃ = 1−f₁−f₂ · ○ = optimal · dashed = f₁+f₂=1</div>
+      <div class="cinfo">X = f₁ (${d1}µm) · Y = f₂ (${d2}µm) · f₃=1−f₁−f₂ · ○ = optimal · dashed = f₁+f₂=1</div>
     </div>
     <div id="tri-table" class="hidden">
       <div class="tw"><table>
         <thead><tr><th>#</th><th>f₁ ${d1}µm</th><th>f₂ ${d2}µm</th><th>f₃ ${d3}µm</th><th>Packing (%)</th><th>Void (%)</th></tr></thead>
-        <tbody>${top.map((row,i)=>`<tr><td>${i+1}</td><td>${(row.f1*100).toFixed(1)}%</td><td>${(row.f2*100).toFixed(1)}%</td><td>${(row.f3*100).toFixed(1)}%</td><td>${(row.rho*100).toFixed(3)}</td><td>${((1-row.rho)*100).toFixed(3)}</td></tr>`).join('')}</tbody>
+        <tbody>${all.slice(0,12).map((row,i)=>`<tr><td>${i+1}</td><td>${(row.f1*100).toFixed(1)}%</td><td>${(row.f2*100).toFixed(1)}%</td><td>${(row.f3*100).toFixed(1)}%</td><td>${(row.rho*100).toFixed(3)}</td><td>${((1-row.rho)*100).toFixed(3)}</td></tr>`).join('')}</tbody>
       </table></div>
     </div>
   </div>`);
@@ -656,51 +541,54 @@ function doTri(phi0, sizes, steps) {
   setTimeout(()=>{
     if(chartInst){chartInst.destroy();chartInst=null;}
     const ctx=document.getElementById('triC'); if(!ctx)return;
-    const cfg=chartCfg(f1ax,[
-      {data:bestPF1,borderColor:'#1a6b4a',backgroundColor:'rgba(26,107,74,0.07)',fill:true,tension:0.25,pointRadius:0,borderWidth:2}
-    ],`f₁ — fraction of ${d1}µm in solid mix (%)`,`Max packing density (%)`);
-    cfg.options.plugins.tooltip.callbacks={label:c=>`Best packing: ${c.parsed.y.toFixed(3)}%`};
-    chartInst=new Chart(ctx,cfg);
+    chartInst=new Chart(ctx,{type:'line',
+      data:{labels:f1ax,datasets:[{data:bestPF1,borderColor:'#1a6b4a',backgroundColor:'rgba(26,107,74,0.07)',fill:true,tension:0.25,pointRadius:0,borderWidth:2}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>`Best packing: ${c.parsed.y.toFixed(3)}%`}}},
+        scales:{
+          x:{title:{display:true,text:`f₁ — fraction of ${d1}µm in solid mix (%)`,color:'#96938c',font:{family:'JetBrains Mono',size:11}},ticks:{color:'#96938c',font:{family:'JetBrains Mono',size:10},maxTicksLimit:10},grid:{color:'rgba(0,0,0,0.05)'}},
+          y:{title:{display:true,text:'Max packing density (%)',color:'#96938c',font:{family:'JetBrains Mono',size:11}},ticks:{color:'#96938c',font:{family:'JetBrains Mono',size:10}},grid:{color:'rgba(0,0,0,0.05)'}}
+        }
+      }
+    });
   },60);
 }
 
 function drawHM(){
   const canvas=document.getElementById('heatmap'); if(!canvas||!sHeat)return;
-  const sz=Math.min(440,canvas.parentElement.offsetWidth-32);
-  canvas.width=sz; canvas.height=sz;
+  const sz2=Math.min(440,canvas.parentElement.offsetWidth-32);
+  canvas.width=sz2; canvas.height=sz2;
   const ctx=canvas.getContext('2d');
-  ctx.fillStyle='#f3f2ee'; ctx.fillRect(0,0,sz,sz);
-  const span=sBRho-sPhi0+0.001;
-  const cell=sz/(sHeatSteps+1);
+  ctx.fillStyle='#f3f2ed'; ctx.fillRect(0,0,sz2,sz2);
+  const span=sBRho-sPhi0+0.001, cell=sz2/(sHS+1);
   sHeat.forEach(({f1,f2,f3,rho})=>{
     if(f3<-0.01)return;
-    const x=Math.round(f1*(sz-1)), y=Math.round((1-f2)*(sz-1));
+    const x=Math.round(f1*(sz2-1)), y=Math.round((1-f2)*(sz2-1));
     const t=Math.max(0,Math.min(1,(rho-sPhi0)/span));
-    const r2=Math.round(229-t*203), g2=Math.round(242-t*95), b2=Math.round(235-t*161);
-    ctx.fillStyle=`rgba(${r2},${g2},${b2},${0.3+t*0.7})`;
+    ctx.fillStyle=`rgba(${Math.round(229-t*203)},${Math.round(242-t*95)},${Math.round(235-t*161)},${0.3+t*0.7})`;
     ctx.fillRect(x,y,Math.ceil(cell*1.8),Math.ceil(cell*1.8));
   });
-  ctx.beginPath(); ctx.moveTo(sz,0); ctx.lineTo(0,sz);
+  ctx.beginPath(); ctx.moveTo(sz2,0); ctx.lineTo(0,sz2);
   ctx.strokeStyle='rgba(0,0,0,0.18)'; ctx.lineWidth=1; ctx.setLineDash([5,4]); ctx.stroke(); ctx.setLineDash([]);
-  const ox=sBF1*(sz-1), oy=(1-sBF2)*(sz-1);
+  const ox=sBF1*(sz2-1), oy=(1-sBF2)*(sz2-1);
   ctx.beginPath(); ctx.arc(ox,oy,8,0,Math.PI*2); ctx.strokeStyle='#1a6b4a'; ctx.lineWidth=2.5; ctx.stroke();
   ctx.beginPath(); ctx.arc(ox,oy,3,0,Math.PI*2); ctx.fillStyle='#1a6b4a'; ctx.fill();
   ctx.fillStyle='#96938c'; ctx.font='11px JetBrains Mono,monospace';
-  ctx.fillText('f₁ →',sz-40,sz-6);
-  ctx.save(); ctx.translate(14,sz/2); ctx.rotate(-Math.PI/2); ctx.fillText('f₂ ↑',0,0); ctx.restore();
+  ctx.fillText('f₁ →',sz2-40,sz2-6);
+  ctx.save(); ctx.translate(14,sz2/2); ctx.rotate(-Math.PI/2); ctx.fillText('f₂ ↑',0,0); ctx.restore();
   [0.25,0.5,0.75].forEach(v=>{
-    const x=Math.round(v*(sz-1));
-    ctx.fillStyle='rgba(0,0,0,0.12)'; ctx.fillRect(x,sz-4,1,4);
+    const x=Math.round(v*(sz2-1));
+    ctx.fillStyle='rgba(0,0,0,0.12)'; ctx.fillRect(x,sz2-4,1,4);
     ctx.fillStyle='#96938c'; ctx.font='9px JetBrains Mono,monospace';
-    ctx.fillText(Math.round(v*100)+'%',x-10,sz+2);
+    ctx.fillText(Math.round(v*100)+'%',x-10,sz2+2);
   });
 }
 
 function sv(mk,v){
   const vs=mk==='bi'?['line','table']:['line','heatmap','table'];
-  vs.forEach(x=>{const e=document.getElementById(mk+'-'+x); if(e)e.classList.toggle('hidden',x!==v);});
+  vs.forEach(x=>{const e=document.getElementById(mk+'-'+x);if(e)e.classList.toggle('hidden',x!==v);});
   document.querySelectorAll(`#vt-${mk} .vtab`).forEach((t,i)=>t.classList.toggle('active',vs[i]===v));
-  if(v==='heatmap') setTimeout(drawHM,80);
+  if(v==='heatmap')setTimeout(drawHM,80);
 }
 
 buildManual();
