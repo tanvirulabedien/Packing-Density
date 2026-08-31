@@ -6,181 +6,137 @@
 <title>Particle Packing Optimizer</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,300;0,600;0,700;1,300&display=swap');
-
-:root {
-  --bg:#f3f1ea; --bg2:#e8e5db; --surface:#fff; --surface2:#eeebe2;
-  --border:#d5d1c4; --border2:#b5b0a0;
-  --green:#1a6b4a; --green-lt:#dff0e8; --green-dk:#124f36;
-  --blue:#1450a0; --blue-lt:#e0eaf8;
-  --orange:#b8440e; --orange-lt:#fde8dc;
-  --text:#17160e; --text2:#504d44; --text3:#908c80;
-  --mono:'JetBrains Mono',monospace;
-  --serif:'Fraunces',Georgia,serif;
-  --c1:#1e7a52; --c2:#1450a0; --c3:#b8440e;
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,400;0,700;1,400&display=swap');
+:root{
+  --bg:#f3f1ea;--bg2:#e8e5da;--sur:#fff;--sur2:#f0ede4;
+  --brd:#d5d0c2;--brd2:#b0ab9a;
+  --g:#1a6b4a;--glt:#dff0e8;--gdk:#124f36;
+  --bl:#1450a0;--blt:#e0eaf8;
+  --or:#b8440e;--olt:#fde8dc;
+  --tx:#17160d;--tx2:#504c42;--tx3:#908a7c;
+  --c1:#1e7a52;--c2:#1450a0;--c3:#b8440e;
+  --mono:'JetBrains Mono',monospace;--serif:'Fraunces',Georgia,serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;
-  background-image:radial-gradient(#c5c1b4 1px,transparent 1px);background-size:20px 20px;}
-.app{max-width:1280px;margin:0 auto;padding:2rem 1.5rem 6rem;}
-
-/* HEADER */
-.hdr{border-bottom:2px solid var(--text);padding-bottom:1.2rem;margin-bottom:1.6rem;
+body{background:var(--bg);color:var(--tx);font-family:var(--mono);min-height:100vh;
+  background-image:radial-gradient(#c2bdb0 1px,transparent 1px);background-size:20px 20px;}
+.app{max-width:1280px;margin:0 auto;padding:2rem 1.5rem 5rem;}
+.hdr{border-bottom:2px solid var(--tx);padding-bottom:1.2rem;margin-bottom:1.6rem;
   display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
-.eyebrow{font-size:9px;letter-spacing:3.5px;text-transform:uppercase;color:var(--green);margin-bottom:7px;}
+.eyebrow{font-size:9px;letter-spacing:3.5px;text-transform:uppercase;color:var(--g);margin-bottom:7px;}
 h1{font-family:var(--serif);font-size:clamp(22px,3vw,36px);font-weight:700;line-height:1.05;}
-h1 em{font-style:italic;color:var(--green);}
-.sub{font-size:11px;color:var(--text2);margin-top:5px;line-height:1.9;}
-.hbadge{background:var(--text);color:var(--bg);font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:2px;}
-
-/* MODE */
-.mode-row{display:flex;margin-bottom:1.2rem;border:1.5px solid var(--border2);border-radius:6px;
-  overflow:hidden;width:fit-content;background:var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.07);}
+h1 em{font-style:italic;color:var(--g);}
+.sub{font-size:11px;color:var(--tx2);margin-top:5px;line-height:1.9;}
+.hbadge{background:var(--tx);color:var(--bg);font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:2px;}
+.mode-row{display:flex;margin-bottom:1.2rem;border:1.5px solid var(--brd2);border-radius:6px;
+  overflow:hidden;width:fit-content;background:var(--sur);box-shadow:0 1px 4px rgba(0,0,0,.07);}
 .mbtn{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;
-  padding:9px 22px;border:none;border-right:1.5px solid var(--border2);background:transparent;
-  color:var(--text2);cursor:pointer;transition:all .18s;}
+  padding:9px 22px;border:none;border-right:1.5px solid var(--brd2);background:transparent;
+  color:var(--tx2);cursor:pointer;transition:all .18s;}
 .mbtn:last-child{border-right:none;}.mbtn:hover{background:var(--bg2);}
-.mbtn.active{background:var(--text);color:var(--bg);}
-
-/* LAYOUT */
-.layout{display:grid;grid-template-columns:340px 1fr;gap:1.2rem;align-items:start;}
+.mbtn.active{background:var(--tx);color:var(--bg);}
+.layout{display:grid;grid-template-columns:330px 1fr;gap:1.2rem;align-items:start;}
 @media(max-width:960px){.layout{grid-template-columns:1fr;}}
-
-/* CARD */
-.card{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;
-  overflow:hidden;margin-bottom:1.1rem;
-  box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);}
+.card{background:var(--sur);border:1.5px solid var(--brd);border-radius:8px;overflow:hidden;
+  margin-bottom:1.1rem;box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);}
 .card:last-child{margin-bottom:0;}
-.ch{padding:9px 14px;border-bottom:1.5px solid var(--border);font-size:9px;letter-spacing:2.5px;
-  text-transform:uppercase;color:var(--text2);background:var(--surface2);
+.ch{padding:9px 14px;border-bottom:1.5px solid var(--brd);font-size:9px;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--tx2);background:var(--sur2);
   display:flex;align-items:center;justify-content:space-between;}
-.cdot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+.cdot{width:7px;height:7px;border-radius:50%;background:var(--g);}
 .cb{padding:14px;}
-
-/* COMP BLOCK */
-.cblk{border:1.5px solid var(--border);border-radius:7px;padding:12px;margin-bottom:10px;background:var(--bg);}
-.cblk:last-of-type{margin-bottom:0;}
-.cblk:hover{border-color:var(--border2);}
-.chdr{display:flex;align-items:center;gap:8px;margin-bottom:11px;}
-.cdot2{width:11px;height:11px;border-radius:50%;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,.2);}
-.cname{font-size:10px;color:var(--text2);flex:1;}
+.cblk{border:1.5px solid var(--brd);border-radius:7px;padding:12px;margin-bottom:10px;background:var(--bg);}
+.cblk:hover{border-color:var(--brd2);}
+.chdr{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.cdot2{width:11px;height:11px;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.cname{font-size:10px;color:var(--tx2);flex:1;}
 .szw{display:flex;align-items:center;gap:4px;}
-.szinp{width:56px;background:var(--surface);border:1.5px solid var(--border2);color:var(--text);
+.szinp{width:56px;background:var(--sur);border:1.5px solid var(--brd2);color:var(--tx);
   font-family:var(--mono);font-size:12px;padding:4px 6px;border-radius:4px;text-align:right;outline:none;}
-.szinp:focus{border-color:var(--green);}
-.szu{font-size:10px;color:var(--text3);}
-
-/* SLIDER */
+.szinp:focus{border-color:var(--g);}
+.szu{font-size:10px;color:var(--tx3);}
 .slrow{display:flex;align-items:center;gap:10px;}
-.sllbl{font-size:9px;color:var(--text3);width:14px;text-align:center;}
+.sllbl{font-size:9px;color:var(--tx3);width:14px;text-align:center;}
 input[type=range].fsl{flex:1;-webkit-appearance:none;height:5px;border-radius:3px;outline:none;cursor:pointer;}
 input[type=range].fsl::-webkit-slider-thumb{-webkit-appearance:none;width:19px;height:19px;border-radius:50%;
   cursor:pointer;border:2.5px solid white;box-shadow:0 1px 5px rgba(0,0,0,.28);transition:transform .1s;}
 input[type=range].fsl::-webkit-slider-thumb:hover{transform:scale(1.15);}
 .fv{font-family:var(--mono);font-size:12px;font-weight:600;min-width:40px;text-align:right;}
-
-/* PHI0 */
-.phi-row{display:flex;align-items:center;gap:10px;padding-top:10px;margin-top:10px;border-top:1.5px solid var(--border);}
-.phi-lbl{font-size:10px;color:var(--text2);flex:1;}
+.phi-row{display:flex;align-items:center;gap:10px;padding-top:10px;margin-top:10px;border-top:1.5px solid var(--brd);}
+.phi-lbl{font-size:10px;color:var(--tx2);flex:1;}
 input[type=range].phisl{flex:2;-webkit-appearance:none;height:5px;border-radius:3px;outline:none;cursor:pointer;}
 input[type=range].phisl::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;
-  background:var(--green);cursor:pointer;border:2.5px solid white;box-shadow:0 1px 4px rgba(0,0,0,.2);}
-.phiv{font-size:12px;font-weight:600;color:var(--green);min-width:32px;text-align:right;}
-
-/* FRAC BAR */
-.fbar{margin:12px 0 4px;border-radius:5px;overflow:hidden;height:26px;display:flex;border:1.5px solid var(--border);}
+  background:var(--g);cursor:pointer;border:2.5px solid white;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.phiv{font-size:12px;font-weight:600;color:var(--g);min-width:32px;text-align:right;}
+.fbar{margin:12px 0 4px;border-radius:5px;overflow:hidden;height:26px;display:flex;border:1.5px solid var(--brd);}
 .fseg{height:100%;transition:width .35s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;
   justify-content:center;font-size:10px;font-weight:600;color:rgba(255,255,255,.92);overflow:hidden;white-space:nowrap;}
-
-/* SNAP */
-.snap-btn{width:100%;padding:10px;margin-top:12px;background:var(--green);color:#fff;
+.snap-btn{width:100%;padding:10px;margin-top:12px;background:var(--g);color:#fff;
   font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;
   border:none;border-radius:6px;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(26,107,74,.22);}
-.snap-btn:hover{background:var(--green-dk);transform:translateY(-1px);}
-
-/* METRICS */
+.snap-btn:hover{background:var(--gdk);transform:translateY(-1px);}
 .mg{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px;}
-.metric{background:var(--surface2);border:1.5px solid var(--border);border-radius:6px;padding:10px 11px;transition:all .25s;}
-.metric.best{border-color:var(--green);background:var(--green-lt);}
-.metric.best .mv{color:var(--green);}
-.ml{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;}
-.mv{font-family:var(--serif);font-size:17px;font-weight:700;color:var(--text);line-height:1;}
-.ms{font-size:9px;color:var(--text3);margin-top:2px;}
-
-/* r BARS */
-.rbar-wrap{height:9px;border-radius:4px;overflow:hidden;background:var(--bg2);border:1px solid var(--border);margin:4px 0;}
+.metric{background:var(--sur2);border:1.5px solid var(--brd);border-radius:6px;padding:10px 11px;transition:all .25s;}
+.metric.best{border-color:var(--g);background:var(--glt);}
+.metric.best .mv{color:var(--g);}
+.ml{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);margin-bottom:4px;}
+.mv{font-family:var(--serif);font-size:17px;font-weight:700;color:var(--tx);line-height:1;}
+.ms{font-size:9px;color:var(--tx3);margin-top:2px;}
+.rbar-wrap{height:9px;border-radius:4px;overflow:hidden;background:var(--bg2);border:1px solid var(--brd);margin:4px 0;}
 .rbar-fill{height:100%;border-radius:4px;transition:width .4s cubic-bezier(.4,0,.2,1);}
-
-/* CHART */
 .chart-outer{position:relative;width:100%;height:210px;padding:12px;}
-.optbar{font-size:11px;color:var(--text2);padding:7px 14px;background:var(--green-lt);
-  border-top:1.5px solid var(--green);line-height:1.8;}
-.optbar em{color:var(--green);font-style:normal;font-weight:600;}
-
-/* TABLE */
+.optbar{font-size:11px;color:var(--tx2);padding:7px 14px;background:var(--glt);border-top:1.5px solid var(--g);line-height:1.8;}
+.optbar em{color:var(--g);font-style:normal;font-weight:600;}
 .tw{overflow-x:auto;padding:10px;}
 table{width:100%;border-collapse:collapse;font-size:11px;}
-thead tr{background:var(--surface2);}
-th{padding:7px 10px;text-align:right;color:var(--text3);font-size:8px;letter-spacing:2px;text-transform:uppercase;border-bottom:1.5px solid var(--border2);}
+thead tr{background:var(--sur2);}
+th{padding:7px 10px;text-align:right;color:var(--tx3);font-size:8px;letter-spacing:2px;text-transform:uppercase;border-bottom:1.5px solid var(--brd2);}
 th:first-child{text-align:left;}
-td{padding:6px 10px;text-align:right;border-bottom:1.5px solid var(--border);color:var(--text2);}
-td:first-child{text-align:left;color:var(--text3);}
-tr:first-child td{color:var(--green);font-weight:600;}
-tr:hover td{background:var(--green-lt);}
-
-/* VTABS */
-.vtabs{display:flex;gap:4px;padding:8px 12px;border-bottom:1.5px solid var(--border);background:var(--surface2);}
+td{padding:6px 10px;text-align:right;border-bottom:1.5px solid var(--brd);color:var(--tx2);}
+td:first-child{text-align:left;color:var(--tx3);}
+tr:first-child td{color:var(--g);font-weight:600;}
+tr:hover td{background:var(--glt);}
+.vtabs{display:flex;gap:4px;padding:8px 12px;border-bottom:1.5px solid var(--brd);background:var(--sur2);}
 .vtab{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;
-  border-radius:4px;border:1.5px solid transparent;background:transparent;color:var(--text3);
-  cursor:pointer;transition:all .15s;}
-.vtab:hover{color:var(--text);background:var(--bg2);}
-.vtab.active{border-color:var(--green);color:var(--green);background:var(--green-lt);}
+  border-radius:4px;border:1.5px solid transparent;background:transparent;color:var(--tx3);cursor:pointer;transition:all .15s;}
+.vtab:hover{color:var(--tx);background:var(--bg2);}
+.vtab.active{border-color:var(--g);color:var(--g);background:var(--glt);}
 
-/* ── VIZ PANEL ── */
-.viz-panel{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;
-  overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 32px rgba(0,0,0,.04);
-  position:sticky;top:16px;}
-.viz-hdr{padding:10px 16px;border-bottom:1.5px solid var(--border);background:var(--surface2);
+/* VIZ PANEL */
+.viz-panel{background:var(--sur);border:1.5px solid var(--brd);border-radius:8px;overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,.08),0 8px 32px rgba(0,0,0,.04);position:sticky;top:16px;}
+.viz-hdr{padding:10px 16px;border-bottom:1.5px solid var(--brd);background:var(--sur2);
   display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
-.viz-title{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--text2);}
+.viz-title{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--tx2);}
 .vstats{display:flex;gap:20px;}
 .vs{text-align:center;}
-.vs-v{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--green);line-height:1;
-  transition:color .3s;}
-.vs-l{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-top:2px;}
-
-.viz-tabs{display:flex;gap:0;border-bottom:1.5px solid var(--border);background:var(--surface2);}
+.vs-v{font-family:var(--serif);font-size:20px;font-weight:700;color:var(--g);line-height:1;transition:color .3s;}
+.vs-l{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);margin-top:2px;}
+.viz-tabs{display:flex;gap:0;border-bottom:1.5px solid var(--brd);background:var(--sur2);}
 .viz-tab{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;
-  padding:8px 0;border:none;border-right:1.5px solid var(--border);background:transparent;
-  color:var(--text3);cursor:pointer;transition:all .15s;flex:1;}
+  padding:8px 0;border:none;border-right:1.5px solid var(--brd);background:transparent;
+  color:var(--tx3);cursor:pointer;transition:all .15s;flex:1;}
 .viz-tab:last-child{border-right:none;}
-.viz-tab:hover{background:var(--bg2);color:var(--text);}
-.viz-tab.active{background:var(--surface);color:var(--text);font-weight:600;}
-
-.viz-canvas{display:block;width:100% !important;height:auto !important;background:#f9f7f0;}
-.viz-footer{padding:8px 14px;border-top:1.5px solid var(--border);background:var(--surface2);
+.viz-tab:hover{background:var(--bg2);color:var(--tx);}
+.viz-tab.active{background:var(--sur);color:var(--tx);font-weight:600;}
+.viz-canvas{display:block;width:100% !important;}
+.viz-footer{padding:8px 14px;border-top:1.5px solid var(--brd);background:var(--sur2);
   display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
 .vleg{display:flex;gap:10px;flex-wrap:wrap;}
-.vleg-i{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text2);}
-.vleg-d{width:10px;height:10px;border-radius:50%;}
+.vleg-i{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--tx2);}
 .repk-btn{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;
-  padding:5px 12px;border-radius:4px;border:1.5px solid var(--border2);background:transparent;
-  color:var(--text2);cursor:pointer;transition:all .15s;}
-.repk-btn:hover{border-color:var(--green);color:var(--green);}
+  padding:5px 12px;border-radius:4px;border:1.5px solid var(--brd2);background:transparent;
+  color:var(--tx2);cursor:pointer;transition:all .15s;}
+.repk-btn:hover{border-color:var(--g);color:var(--g);}
+/* Density gauge */
+.gauge-strip{padding:8px 16px;border-bottom:1.5px solid var(--brd);background:var(--sur);}
+.gauge-track{height:14px;border-radius:7px;background:var(--bg2);border:1.5px solid var(--brd);overflow:hidden;position:relative;}
+.gauge-fill{height:100%;border-radius:7px;transition:width .5s cubic-bezier(.4,0,.2,1);}
+.gauge-ticks{display:flex;justify-content:space-between;font-size:8px;color:var(--tx3);margin-top:3px;padding:0 1px;}
 
-/* PACKING GAUGE */
-.gauge-wrap{padding:12px 16px;border-top:1.5px solid var(--border);background:var(--surface2);}
-.gauge-track{height:12px;border-radius:6px;background:var(--bg2);border:1px solid var(--border);overflow:hidden;position:relative;}
-.gauge-fill{height:100%;border-radius:6px;transition:width .5s cubic-bezier(.4,0,.2,1);position:relative;}
-.gauge-fill::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;
-  background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,255,255,0.3) 50%,rgba(255,255,255,0) 100%);
-  animation:shimmer 2s infinite;}
-@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
-.gauge-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--text3);margin-top:4px;}
-
-.note{font-size:10px;color:var(--text3);line-height:1.7;margin-top:8px;padding:8px 10px;
-  background:var(--blue-lt);border:1.5px solid #a8c0e4;border-radius:5px;}
-.divider{height:1.5px;background:var(--border);margin:12px 0;}
+.note{font-size:10px;color:var(--tx3);line-height:1.7;margin-top:8px;padding:8px 10px;
+  background:var(--blt);border:1.5px solid #a8c0e4;border-radius:5px;}
+.divider{height:1.5px;background:var(--brd);margin:12px 0;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 .anim{animation:fadeUp .25s ease forwards;}
 .hidden{display:none!important;}
@@ -192,124 +148,105 @@ tr:hover td{background:var(--green-lt);}
 <div class="hdr">
   <div>
     <div class="eyebrow">Powder Technology · Furnas (1931) LD Model</div>
-    <h1>TIFT <em>Packing</em> Density Optimizer</h1>
-    <div class="sub">Drag sliders — watch particles fill space in real time — explore the size ratio effect</div>
+    <h1>Particle <em>Packing</em> Density Optimizer</h1>
+    <div class="sub">Drag sliders — particles update in real time — gaps between them show void fraction</div>
   </div>
-  <div class="hbadge">v5 · accurate physics</div>
+  <div class="hbadge">v6 · accurate voids</div>
 </div>
 
 <div class="mode-row">
   <button class="mbtn active" id="btn-mono" onclick="setMode('mono')">01 // Mono</button>
-  <button class="mbtn" id="btn-bi" onclick="setMode('bi')">02 // Bimodal</button>
-  <button class="mbtn" id="btn-tri" onclick="setMode('tri')">03 // Trimodal</button>
+  <button class="mbtn" id="btn-bi"   onclick="setMode('bi')">02 // Bimodal</button>
+  <button class="mbtn" id="btn-tri"  onclick="setMode('tri')">03 // Trimodal</button>
 </div>
 
 <div class="layout">
-<!-- ═══ LEFT ═══ -->
-<div>
-
+<div><!-- LEFT -->
   <div class="card">
     <div class="ch"><span>Particle controls</span><div class="cdot"></div></div>
     <div class="cb">
-
       <div class="cblk">
-        <div class="chdr">
-          <div class="cdot2" style="background:var(--c1)"></div>
+        <div class="chdr"><div class="cdot2" style="background:var(--c1)"></div>
           <span class="cname">Component 1 — Large</span>
           <div class="szw"><input class="szinp" id="d1" type="number" value="80" min="0.1" step="any" oninput="onSz()"><span class="szu">µm</span></div>
         </div>
-        <div class="slrow">
-          <span class="sllbl" style="color:var(--c1)">f₁</span>
+        <div class="slrow"><span class="sllbl" style="color:var(--c1)">f₁</span>
           <input class="fsl" id="sl1" type="range" min="0" max="100" value="74" step="0.5" oninput="onSl(1)">
-          <span class="fv" id="fv1" style="color:var(--c1)">74.0%</span>
-        </div>
+          <span class="fv" id="fv1" style="color:var(--c1)">74.0%</span></div>
       </div>
-
       <div class="cblk" id="blk2" style="display:none">
-        <div class="chdr">
-          <div class="cdot2" style="background:var(--c2)"></div>
+        <div class="chdr"><div class="cdot2" style="background:var(--c2)"></div>
           <span class="cname">Component 2 — Medium</span>
           <div class="szw"><input class="szinp" id="d2" type="number" value="5" min="0.1" step="any" oninput="onSz()"><span class="szu">µm</span></div>
         </div>
-        <div class="slrow">
-          <span class="sllbl" style="color:var(--c2)">f₂</span>
+        <div class="slrow"><span class="sllbl" style="color:var(--c2)">f₂</span>
           <input class="fsl" id="sl2" type="range" min="0" max="100" value="20" step="0.5" oninput="onSl(2)">
-          <span class="fv" id="fv2" style="color:var(--c2)">20.0%</span>
-        </div>
+          <span class="fv" id="fv2" style="color:var(--c2)">20.0%</span></div>
       </div>
-
       <div class="cblk" id="blk3" style="display:none">
-        <div class="chdr">
-          <div class="cdot2" style="background:var(--c3)"></div>
+        <div class="chdr"><div class="cdot2" style="background:var(--c3)"></div>
           <span class="cname">Component 3 — Small</span>
           <div class="szw"><input class="szinp" id="d3" type="number" value="1" min="0.1" step="any" oninput="onSz()"><span class="szu">µm</span></div>
         </div>
-        <div class="slrow">
-          <span class="sllbl" style="color:var(--c3)">f₃</span>
+        <div class="slrow"><span class="sllbl" style="color:var(--c3)">f₃</span>
           <input class="fsl" id="sl3" type="range" min="0" max="100" value="6" step="0.5" oninput="onSl(3)">
-          <span class="fv" id="fv3" style="color:var(--c3)">6.0%</span>
-        </div>
+          <span class="fv" id="fv3" style="color:var(--c3)">6.0%</span></div>
       </div>
-
       <div class="phi-row">
         <span class="phi-lbl">φ₀ — mono RCP</span>
         <input class="phisl" id="phi0sl" type="range" min="50" max="74" value="64" step="1" oninput="onPhi()">
         <span class="phiv" id="phi0v">0.64</span>
       </div>
-
       <div style="margin-top:12px">
-        <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:5px">Blend composition</div>
+        <div style="font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--tx3);margin-bottom:5px">Blend composition</div>
         <div class="fbar">
           <div class="fseg" id="seg1" style="background:var(--c1);width:100%">100%</div>
           <div class="fseg" id="seg2" style="background:var(--c2);width:0%"></div>
           <div class="fseg" id="seg3" style="background:var(--c3);width:0%"></div>
         </div>
       </div>
-
-      <div class="note" id="lock-note" style="display:none">Sliders auto-normalize — f₁+f₂+f₃ = 100% always.</div>
+      <div class="note" id="lock-note" style="display:none">Sliders auto-normalize — f₁+f₂+f₃ = 100%</div>
       <button class="snap-btn" onclick="snapOpt()">★  Snap to optimal blend</button>
     </div>
   </div>
 
   <div class="card">
     <div class="ch"><span>Packing results</span><div class="cdot"></div></div>
-    <div class="cb" id="res-body"><div style="color:var(--text3);font-size:12px;text-align:center;padding:20px">Adjust sliders above</div></div>
+    <div class="cb" id="res-body"><div style="color:var(--tx3);font-size:12px;text-align:center;padding:20px">Adjust sliders above</div></div>
   </div>
 
   <div class="card">
     <div class="ch"><span>Packing sweep</span><div class="cdot"></div></div>
     <div class="vtabs" id="stabs">
-      <button class="vtab active" onclick="setSTab('chart')">Sweep curve</button>
+      <button class="vtab active" onclick="setSTab('chart')">Curve</button>
       <button class="vtab" onclick="setSTab('table')">Top blends</button>
     </div>
     <div id="st-chart"><div class="chart-outer"><canvas id="sweepC"></canvas></div>
       <div class="optbar" id="optbar">—</div></div>
     <div id="st-table" class="hidden"><div class="tw" id="tblDiv"></div></div>
   </div>
-
 </div>
 
-<!-- ═══ RIGHT — VISUALIZATION ═══ -->
-<div>
+<div><!-- RIGHT VIZ -->
   <div class="viz-panel">
     <div class="viz-hdr">
-      <span class="viz-title">Live particle packing visualization</span>
+      <span class="viz-title">Live particle packing — gaps = void space</span>
       <div class="vstats">
         <div class="vs"><div class="vs-v" id="vs-rho">—</div><div class="vs-l">Packing %</div></div>
-        <div class="vs"><div class="vs-v" id="vs-void" style="color:var(--orange)">—</div><div class="vs-l">Void %</div></div>
-        <div class="vs"><div class="vs-v" id="vs-gain" style="color:var(--blue)">—</div><div class="vs-l">Gain</div></div>
+        <div class="vs"><div class="vs-v" id="vs-void" style="color:var(--or)">—</div><div class="vs-l">Void %</div></div>
+        <div class="vs"><div class="vs-v" id="vs-gain" style="color:var(--bl)">—</div><div class="vs-l">Gain</div></div>
       </div>
     </div>
 
-    <!-- Gauge bar -->
-    <div class="gauge-wrap">
-      <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text2);margin-bottom:4px">
-        <span>Packing density</span><span id="gauge-pct" style="color:var(--green);font-weight:600">—</span>
+    <!-- Packing density gauge -->
+    <div class="gauge-strip">
+      <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--tx2);margin-bottom:4px">
+        <span>Packing density</span><span id="gauge-label" style="font-weight:600;color:var(--g)">—</span>
       </div>
       <div class="gauge-track">
-        <div class="gauge-fill" id="gauge-fill" style="width:0%;background:var(--green)"></div>
+        <div class="gauge-fill" id="gauge-fill" style="width:0%;background:var(--g)"></div>
       </div>
-      <div class="gauge-labels"><span>0%</span><span>φ₀ (mono)</span><span>φ₀(2−φ₀) (bimodal max)</span><span>100%</span></div>
+      <div class="gauge-ticks"><span>0%</span><span>|25%</span><span>|50%</span><span>φ₀=64%</span><span>|75%</span><span>100%</span></div>
     </div>
 
     <div class="viz-tabs">
@@ -318,23 +255,21 @@ tr:hover td{background:var(--green-lt);}
     </div>
 
     <div id="vp-pack">
-      <canvas class="viz-canvas" id="packCanvas" width="500" height="460"></canvas>
+      <canvas class="viz-canvas" id="packCanvas" width="500" height="450" style="height:450px"></canvas>
       <div class="viz-footer">
         <div class="vleg" id="viz-leg"></div>
-        <button class="repk-btn" onclick="newSeed()">↺ Re-randomize</button>
+        <button class="repk-btn" onclick="newSeed()">↺ Re-pack</button>
       </div>
     </div>
 
     <div id="vp-reff" class="hidden">
-      <canvas class="viz-canvas" id="reffCanvas" width="500" height="460"></canvas>
+      <canvas class="viz-canvas" id="reffCanvas" width="500" height="450" style="height:450px"></canvas>
       <div class="viz-footer">
-        <div style="font-size:10px;color:var(--text2)">Three snapshots at different size ratios. Your current r marked on the curve.</div>
+        <div style="font-size:10px;color:var(--tx2)">How size ratio r affects max packing. Your system marked on the curve.</div>
       </div>
     </div>
-
   </div>
 </div>
-
 </div>
 </div>
 
@@ -344,72 +279,112 @@ tr:hover td{background:var(--green-lt);}
 // ═══════════════════════════════════════════════════════════
 function binaryLD(phi0,dL,dS,gL){
   const r=Math.min(dL,dS)/Math.max(dL,dS),u=1-r;
-  const rhoMax=Math.min(0.975,phi0+(1-phi0)*phi0*u);
-  const gStar=phi0/rhoMax;
-  if(gL>=gStar) return Math.max(phi0*.995,Math.min(.975,phi0/gL));
-  return phi0+(rhoMax-phi0)*(gL/gStar);
+  const rm=Math.min(.975,phi0+(1-phi0)*phi0*u),gs=phi0/rm;
+  if(gL>=gs)return Math.max(phi0*.995,Math.min(.975,phi0/gL));
+  return phi0+(rm-phi0)*(gL/gs);
 }
 function furnasRho(phi0,sizes,fracs){
-  const n=sizes.length; if(n===1) return phi0;
+  const n=sizes.length;if(n===1)return phi0;
   const p=sizes.map((s,i)=>({s,f:fracs[i]})).sort((a,b)=>b.s-a.s);
   const sz=p.map(x=>x.s),f=p.map(x=>x.f);
-  if(n===2) return binaryLD(phi0,sz[0],sz[1],f[0]);
-  const f01=f[0]+f[1]; if(f01<1e-9) return phi0;
-  const rho12=binaryLD(phi0,sz[0],sz[1],f[0]/f01);
-  const r23=sz[2]/sz[1],u23=1-r23;
-  const rhoMF=Math.min(.975,rho12+(1-rho12)*phi0*u23);
-  const gSF=rho12/rhoMF;
-  if(f01>=gSF) return Math.max(phi0*.995,Math.min(.975,rho12/f01));
-  return phi0+(rhoMF-phi0)*(f01/gSF);
+  if(n===2)return binaryLD(phi0,sz[0],sz[1],f[0]);
+  const f01=f[0]+f[1];if(f01<1e-9)return phi0;
+  const r12=binaryLD(phi0,sz[0],sz[1],f[0]/f01);
+  const r23=sz[2]/sz[1],u23=1-r23,rmF=Math.min(.975,r12+(1-r12)*phi0*u23),gSF=r12/rmF;
+  if(f01>=gSF)return Math.max(phi0*.995,Math.min(.975,r12/f01));
+  return phi0+(rmF-phi0)*(f01/gSF);
 }
 function optFracs(phi0,sizes){
-  const n=sizes.length;
-  const p=sizes.map((s,i)=>({s,i})).sort((a,b)=>b.s-a.s);
-  const sz=p.map(x=>x.s);
-  if(n===1) return [1];
-  if(n===2){
-    const r=sz[1]/sz[0],u=1-r,rm=Math.min(.975,phi0+(1-phi0)*phi0*u),gs=phi0/rm;
-    const out=[0,0]; out[p[0].i]=gs; out[p[1].i]=1-gs; return out;
-  }
-  const r12=sz[1]/sz[0],u12=1-r12,rm12=Math.min(.975,phi0+(1-phi0)*phi0*u12),gs12=phi0/rm12;
-  const r23=sz[2]/sz[1],u23=1-r23,rm23=Math.min(.975,rm12+(1-rm12)*phi0*u23),gs23=rm12/rm23;
-  const out=[0,0,0];
-  out[p[0].i]=gs23*gs12; out[p[1].i]=gs23*(1-gs12); out[p[2].i]=1-gs23;
-  return out;
+  const n=sizes.length,p=sizes.map((s,i)=>({s,i})).sort((a,b)=>b.s-a.s),sz=p.map(x=>x.s);
+  if(n===1)return[1];
+  if(n===2){const r=sz[1]/sz[0],rm=Math.min(.975,phi0+(1-phi0)*phi0*(1-r)),gs=phi0/rm;
+    const o=[0,0];o[p[0].i]=gs;o[p[1].i]=1-gs;return o;}
+  const r12=sz[1]/sz[0],rm12=Math.min(.975,phi0+(1-phi0)*phi0*(1-r12)),gs12=phi0/rm12;
+  const r23=sz[2]/sz[1],rm23=Math.min(.975,rm12+(1-rm12)*phi0*(1-r23)),gs23=rm12/rm23;
+  const o=[0,0,0];o[p[0].i]=gs23*gs12;o[p[1].i]=gs23*(1-gs12);o[p[2].i]=1-gs23;return o;
+}
+
+// ═══════════════════════════════════════════════════════════
+// PARTICLE COUNT ALGORITHM
+// ═══════════════════════════════════════════════════════════
+// Visual radius ratios (tier 0=large, 1=medium, 2=small)
+// Fixed ratios ensure all sizes always distinguishable.
+// BASE adapts so that:  N × avg_area_per_particle = rho × canvas_area
+// → visual gap fraction = 1-rho exactly matches physics
+const VIS_RATIOS = [1.0, 0.52, 0.26];
+const N_REF = 240;   // reference particle count for mono at phi0_ref=0.64
+
+function computeParticles(phi0, sizes, fracs, rho, W, H) {
+  const n = sizes.length;
+  const canvas_area = W * H;
+  const phi0_ref = 0.64;
+
+  // Sort by physical size → assign visual tier
+  const tierOrder = [...Array(n).keys()].sort((a,b) => sizes[b]-sizes[a]);
+
+  // BASE: fixed for mono-ref, same for all modes
+  // At phi0_ref mono: N_REF × π × BASE² = phi0_ref × canvas_area
+  const BASE = Math.sqrt(phi0_ref * canvas_area / (N_REF * Math.PI));
+
+  // Visual radii by tier
+  const vR = new Array(n);
+  tierOrder.forEach((ci, tier) => {
+    const ratio = tier < VIS_RATIOS.length ? VIS_RATIOS[tier] : VIS_RATIOS[VIS_RATIOS.length-1];
+    vR[ci] = Math.max(3.0, BASE * ratio);
+  });
+
+  // Weighted average area per particle
+  const avgArea = fracs.reduce((a, f, i) => a + f * Math.PI * vR[i]*vR[i], 0);
+
+  // Total N so that placed area = rho × canvas (strict area conservation)
+  let N = Math.round(rho * canvas_area / avgArea);
+  N = Math.max(15, Math.min(N, 700));
+
+  // Per-component counts
+  const counts = sizes.map((d, i) => Math.max(1, Math.round(fracs[i] * N)));
+
+  return { vR, counts, BASE };
 }
 
 // ═══════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════
-const COLS=['#1e7a52','#1450a0','#b8440e'];
-const COLS_L=['rgba(30,122,82,.88)','rgba(20,80,160,.88)','rgba(184,68,14,.88)'];
-let mode='mono', vizTab='pack', sweepTab='chart';
-let chartInst=null, rngSeed=42;
+const COLS  = ['#1e7a52','#1450a0','#b8440e'];
+const COLS_L= ['rgba(30,122,82,.88)','rgba(20,80,160,.88)','rgba(184,68,14,.88)'];
+let mode='mono', vizTab='pack', sweepTab='chart', chartInst=null, rngSeed=42;
 
 function pf(id){return parseFloat(document.getElementById(id).value)||0;}
-function getSizes(){
-  const d1=pf('d1')||80; if(mode==='mono') return [d1];
-  const d2=pf('d2')||5;  if(mode==='bi')   return [d1,d2];
-  const d3=pf('d3')||1;  return [d1,d2,d3];
+function getRawSizes(){
+  const d1=pf('d1')||80;if(mode==='mono')return[d1];
+  const d2=pf('d2')||5;if(mode==='bi')return[d1,d2];
+  const d3=pf('d3')||1;return[d1,d2,d3];
 }
-function getFracs(){
+function getRawFracs(){
   const s1=parseFloat(document.getElementById('sl1').value)/100;
-  if(mode==='mono') return [1];
+  if(mode==='mono')return[1];
   const s2=parseFloat(document.getElementById('sl2').value)/100;
-  if(mode==='bi'){const t=s1+s2; return t>0?[s1/t,s2/t]:[.5,.5];}
+  if(mode==='bi'){const t=s1+s2;return t>0?[s1/t,s2/t]:[.5,.5];}
   const s3=parseFloat(document.getElementById('sl3').value)/100;
-  const t=s1+s2+s3; return t>0?[s1/t,s2/t,s3/t]:[1/3,1/3,1/3];
+  const t=s1+s2+s3;return t>0?[s1/t,s2/t,s3/t]:[1/3,1/3,1/3];
 }
 function getPhi0(){return parseInt(document.getElementById('phi0sl').value)/100;}
-
-// seeded RNG (Mulberry32) — deterministic placement
-function mkRng(seed){
-  let s=seed>>>0;
-  return ()=>{s=Math.imul(s^s>>>15,1|s);s^=s+Math.imul(s^s>>>7,61|s);return((s^s>>>14)>>>0)/4294967296;};
+function mkRng(seed){let s=seed>>>0;
+  return()=>{s=Math.imul(s^s>>>15,1|s);s^=s+Math.imul(s^s>>>7,61|s);return((s^s>>>14)>>>0)/4294967296;};}
+function collapse(rawS,rawF,phi0){
+  let pairs=rawS.map((s,i)=>({s,f:rawF[i]})).sort((a,b)=>b.s-a.s);
+  let ch=true;
+  while(ch&&pairs.length>1){ch=false;const nx=[];let i=0;
+    while(i<pairs.length){if(i+1<pairs.length){const{s:dL,f:fL}=pairs[i],{s:dS,f:fS}=pairs[i+1],r=dS/dL;
+        if(r>=.90){const tf=fL+fS;nx.push({s:(dL*fL+dS*fS)/tf,f:tf});i+=2;ch=true;continue;}}
+      nx.push(pairs[i]);i++;}pairs=nx;}
+  const tot=pairs.reduce((a,p)=>a+p.f,0);
+  return{sizes:pairs.map(p=>p.s),fracs:pairs.map(p=>p.f/tot)};
 }
+function getSizes(){return collapse(getRawSizes(),getRawFracs(),getPhi0()).sizes;}
+function getFracs(){return collapse(getRawSizes(),getRawFracs(),getPhi0()).fracs;}
 
 // ═══════════════════════════════════════════════════════════
-// MODE / SLIDER
+// MODE / SLIDERS
 // ═══════════════════════════════════════════════════════════
 function setMode(m){
   mode=m;
@@ -417,99 +392,65 @@ function setMode(m){
   document.getElementById('blk2').style.display=(m==='bi'||m==='tri')?'':'none';
   document.getElementById('blk3').style.display=m==='tri'?'':'none';
   document.getElementById('lock-note').style.display=m!=='mono'?'':'none';
-  if(m==='mono'){setSl(1,100);}
-  else if(m==='bi'){setSl(1,74);setSl(2,26);}
-  else{setSl(1,69);setSl(2,23);setSl(3,8);}
+  if(m==='mono')setSl(1,100);else if(m==='bi'){setSl(1,74);setSl(2,26);}else{setSl(1,69);setSl(2,23);setSl(3,8);}
   update();
 }
-function setSl(idx,val){
-  const el=document.getElementById('sl'+idx);
-  if(el){el.value=val;slBg(el,val,idx);}
-}
-function slBg(el,val,idx){
-  el.style.background=`linear-gradient(to right,${COLS[idx-1]} ${val}%,#d0ccbf ${val}%)`;
-}
-function onSl(changed){
+function setSl(i,v){const e=document.getElementById('sl'+i);if(e){e.value=v;slBg(e,v,i);}}
+function slBg(el,v,i){el.style.background=`linear-gradient(to right,${COLS[i-1]} ${v}%,#ccc8ba ${v}%)`;}
+function onSl(ch){
   if(mode==='mono'){update();return;}
   const ids=mode==='bi'?[1,2]:[1,2,3];
-  const newVal=parseFloat(document.getElementById('sl'+changed).value);
-  const remaining=100-newVal;
-  const others=ids.filter(i=>i!==changed);
-  const oSum=others.reduce((a,i)=>a+parseFloat(document.getElementById('sl'+i).value),0);
-  others.forEach(i=>{
-    const old=parseFloat(document.getElementById('sl'+i).value);
-    const nv=oSum>0?Math.max(0,(old/oSum)*remaining):remaining/others.length;
-    document.getElementById('sl'+i).value=nv;
-    slBg(document.getElementById('sl'+i),nv,i);
-  });
-  slBg(document.getElementById('sl'+changed),newVal,changed);
-  update();
+  const nv=parseFloat(document.getElementById('sl'+ch).value),rem=100-nv;
+  const oth=ids.filter(i=>i!==ch);
+  const oS=oth.reduce((a,i)=>a+parseFloat(document.getElementById('sl'+i).value),0);
+  oth.forEach(i=>{const old=parseFloat(document.getElementById('sl'+i).value);
+    const v=oS>0?Math.max(0,(old/oS)*rem):rem/oth.length;
+    document.getElementById('sl'+i).value=v;slBg(document.getElementById('sl'+i),v,i);});
+  slBg(document.getElementById('sl'+ch),nv,ch);update();
 }
 function onSz(){update();}
 function onPhi(){
   const v=parseInt(document.getElementById('phi0sl').value)/100;
   document.getElementById('phi0v').textContent=v.toFixed(2);
-  const pct=((v-.50)/(.74-.50)*100).toFixed(1);
-  document.getElementById('phi0sl').style.background=
-    `linear-gradient(to right,var(--green) 0%,var(--green) ${pct}%,#d0ccbf ${pct}%)`;
+  const p=((v-.5)/(.74-.5)*100).toFixed(1);
+  document.getElementById('phi0sl').style.background=`linear-gradient(to right,var(--g) 0%,var(--g) ${p}%,#ccc8ba ${p}%)`;
   update();
 }
 function newSeed(){rngSeed=Math.floor(Math.random()*9999)+1;update();}
 function snapOpt(){
   const phi0=getPhi0(),sizes=getSizes(),opt=optFracs(phi0,sizes);
-  setSl(1,opt[0]*100);
-  if(mode!=='mono') setSl(2,opt[1]*100);
-  if(mode==='tri')  setSl(3,opt[2]*100);
-  update();
+  setSl(1,opt[0]*100);if(mode!=='mono')setSl(2,opt[1]*100);if(mode==='tri')setSl(3,opt[2]*100);update();
 }
 
 // ═══════════════════════════════════════════════════════════
 // MAIN UPDATE
 // ═══════════════════════════════════════════════════════════
 function update(){
-  const phi0=getPhi0(),sizes=getSizes(),fracs=getFracs();
-  const rho=furnasRho(phi0,sizes,fracs);
-
-  // Slider bg + labels
-  [1,2,3].forEach(i=>{
-    const f=fracs[i-1]||0;
-    document.getElementById('fv'+i).textContent=(f*100).toFixed(1)+'%';
-    const el=document.getElementById('sl'+i);
-    if(el) slBg(el,f*100,i);
-  });
-
-  // Frac bar
-  ['seg1','seg2','seg3'].forEach((id,i)=>{
-    const seg=document.getElementById(id),f=fracs[i]||0;
-    seg.style.width=(f*100)+'%';
-    seg.textContent=f>.06?((f*100).toFixed(0)+'%'):'';
-  });
-
-  // Stats
+  const phi0=getPhi0(),sizes=getSizes(),fracs=getFracs(),rho=furnasRho(phi0,sizes,fracs);
+  [1,2,3].forEach(i=>{const f=fracs[i-1]||0;document.getElementById('fv'+i).textContent=(f*100).toFixed(1)+'%';
+    const el=document.getElementById('sl'+i);if(el)slBg(el,f*100,i);});
+  ['seg1','seg2','seg3'].forEach((id,i)=>{const seg=document.getElementById(id),f=fracs[i]||0;
+    seg.style.width=(f*100)+'%';seg.textContent=f>.06?((f*100).toFixed(0)+'%'):'';});
   document.getElementById('vs-rho').textContent=(rho*100).toFixed(1)+'%';
   document.getElementById('vs-void').textContent=((1-rho)*100).toFixed(1)+'%';
   const gain=(rho-phi0)*100;
   document.getElementById('vs-gain').textContent=(gain>=0?'+':'')+gain.toFixed(1)+' pts';
-  document.getElementById('vs-rho').style.color=rho>phi0+.15?'#1a6b4a':rho>phi0+.05?'#1450a0':'#b8440e';
-
-  // Gauge
-  const gPct=(rho*100).toFixed(2)+'%';
-  document.getElementById('gauge-pct').textContent=gPct;
-  const gaugeW=Math.min(99,rho*100);
-  const gFill=document.getElementById('gauge-fill');
-  gFill.style.width=gaugeW+'%';
-  gFill.style.background=rho>phi0+.15?'var(--green)':rho>phi0+.05?'var(--blue)':'var(--orange)';
-
+  document.getElementById('vs-rho').style.color=rho>phi0+.15?'var(--g)':rho>phi0+.05?'var(--bl)':'var(--or)';
+  const gW=Math.min(99,rho*100);
+  document.getElementById('gauge-fill').style.width=gW+'%';
+  document.getElementById('gauge-fill').style.background=rho>.80?'var(--g)':rho>.70?'var(--bl)':'var(--or)';
+  document.getElementById('gauge-label').textContent=(rho*100).toFixed(2)+'%';
   updateResults(phi0,sizes,fracs,rho);
   updateSweep(phi0,sizes,fracs);
-
-  // Legend
-  document.getElementById('viz-leg').innerHTML=sizes.map((d,i)=>
-    `<div class="vleg-i"><div class="vleg-d" style="background:${COLS[i]}"></div>${d}µm (${(fracs[i]*100).toFixed(1)}%)</div>`
-  ).join('');
-
-  if(vizTab==='pack') requestAnimationFrame(()=>drawPack(phi0,sizes,fracs,rho));
-  else requestAnimationFrame(()=>drawREff(phi0,sizes));
+  // legend with correct visual sizes
+  const{vR}=computeParticles(phi0,sizes,fracs,rho,500,450);
+  document.getElementById('viz-leg').innerHTML=sizes.map((d,i)=>`
+    <div class="vleg-i">
+      <div style="width:${Math.round(vR[i]*1.5)}px;height:${Math.round(vR[i]*1.5)}px;border-radius:50%;background:${COLS[i]};box-shadow:0 1px 3px rgba(0,0,0,.3);flex-shrink:0"></div>
+      ${d.toFixed(1)}µm (${(fracs[i]*100).toFixed(1)}%)
+    </div>`).join('');
+  if(vizTab==='pack')requestAnimationFrame(()=>drawPack(phi0,sizes,fracs,rho));
+  else               requestAnimationFrame(()=>drawREff(phi0,sizes));
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -520,67 +461,48 @@ function updateResults(phi0,sizes,fracs,rho){
   let h=`<div class="mg">
     <div class="metric best"><div class="ml">Packing ρ</div><div class="mv">${(rho*100).toFixed(2)}%</div></div>
     <div class="metric"><div class="ml">Void</div><div class="mv">${((1-rho)*100).toFixed(2)}%</div></div>
-    <div class="metric"><div class="ml">Gain vs mono</div><div class="mv" style="color:var(--blue)">${((rho-phi0)*100>=0?'+':'')}${((rho-phi0)*100).toFixed(2)}</div><div class="ms">pts</div></div>`;
-  if(n>=2){
-    const sorted=[...sizes].sort((a,b)=>b-a);
-    const r1=sorted[1]/sorted[0],u1=1-r1;
-    const rm1=Math.min(.975,phi0+(1-phi0)*phi0*u1),gs1=phi0/rm1;
+    <div class="metric"><div class="ml">Gain vs mono</div><div class="mv" style="color:var(--bl)">${((rho-phi0)*100>=0?'+':'')}${((rho-phi0)*100).toFixed(2)}</div><div class="ms">pts</div></div>`;
+  if(n>=2){const sorted=[...sizes].sort((a,b)=>b-a);
+    const r1=sorted[1]/sorted[0],u1=1-r1,rm1=Math.min(.975,phi0+(1-phi0)*phi0*u1),gs1=phi0/rm1;
     h+=`<div class="metric"><div class="ml">r (L→M)</div><div class="mv">${r1.toFixed(4)}</div><div class="ms">d_s/d_L</div></div>
         <div class="metric"><div class="ml">ρ_max</div><div class="mv">${(rm1*100).toFixed(2)}%</div></div>
-        <div class="metric"><div class="ml">g* optimal</div><div class="mv">${(gs1*100).toFixed(1)}%</div><div class="ms">large fraction</div></div>`;
-  }
+        <div class="metric"><div class="ml">g* optimal</div><div class="mv">${(gs1*100).toFixed(1)}%</div><div class="ms">large frac</div></div>`;}
   h+='</div>';
-  if(n>=2){
-    const sorted=[...sizes].sort((a,b)=>b-a);
-    h+=`<div>`;
+  if(n>=2){const sorted=[...sizes].sort((a,b)=>b-a);h+=`<div>`;
     for(let i=0;i<sorted.length-1;i++){
       const r=sorted[i+1]/sorted[i],u=1-r;
       const q=r<.05?'Excellent':r<.1?'Very good':r<.2?'Good':r<.4?'Moderate':'Poor';
-      const col=r<.1?'var(--green)':r<.3?'var(--blue)':'var(--orange)';
-      const bg=r<.1?'var(--green-lt)':r<.3?'var(--blue-lt)':'var(--orange-lt)';
-      h+=`<div style="margin-bottom:7px;font-size:10px;color:var(--text2)">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
-          <span>${sorted[i+1].toFixed(2)}µm / ${sorted[i].toFixed(2)}µm &nbsp; r=${r.toFixed(4)} &nbsp; u=${u.toFixed(4)}</span>
+      const col=r<.1?'var(--g)':r<.3?'var(--bl)':'var(--or)';
+      const bg=r<.1?'var(--glt)':r<.3?'var(--blt)':'var(--olt)';
+      h+=`<div style="margin-bottom:6px;font-size:10px;color:var(--tx2)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+          <span>${sorted[i+1].toFixed(2)}µm / ${sorted[i].toFixed(2)}µm &nbsp;r=${r.toFixed(4)} u=${u.toFixed(4)}</span>
           <span style="color:${col};font-weight:600;font-size:9px;background:${bg};padding:1px 7px;border-radius:3px">${q}</span>
         </div>
         <div class="rbar-wrap"><div class="rbar-fill" style="width:${(u*100).toFixed(1)}%;background:${col}"></div></div>
-        <div style="font-size:9px;color:var(--text3)">Void accessible by small particles: ${(u*100).toFixed(1)}%</div>
-      </div>`;
+        <div style="font-size:9px;color:var(--tx3)">Void accessible: ${(u*100).toFixed(1)}%</div></div>`;
     }
-    h+=`</div>`;
-  }
+    h+=`</div>`;}
   document.getElementById('res-body').innerHTML=h;
 }
 
 // ═══════════════════════════════════════════════════════════
-// SWEEP CHART
+// SWEEP
 // ═══════════════════════════════════════════════════════════
-function setSTab(t){
-  sweepTab=t;
+function setSTab(t){sweepTab=t;
   document.querySelectorAll('#stabs .vtab').forEach((b,i)=>b.classList.toggle('active',['chart','table'][i]===t));
   document.getElementById('st-chart').classList.toggle('hidden',t!=='chart');
-  document.getElementById('st-table').classList.toggle('hidden',t!=='table');
-}
-function updateSweep(phi0,sizes,fracs){
-  if(mode==='mono'){
-    if(chartInst){chartInst.destroy();chartInst=null;}
-    document.getElementById('optbar').textContent=`Monodisperse — packing = φ₀ = ${(phi0*100).toFixed(2)}%`;
-    document.getElementById('tblDiv').innerHTML='<div style="padding:16px;font-size:11px;color:var(--text3)">No sweep for monodisperse.</div>';
-    return;
-  }
+  document.getElementById('st-table').classList.toggle('hidden',t!=='table');}
 
-  // ── Chart sweep: always sweep f₁ with others proportional ──
-  const S=400,labels=[],dens=[];
-  let bestRho=0,bestF1=0;
-  const cF1=fracs[0];
-  for(let i=0;i<=S;i++){
-    const g=i/S;
-    let rho;
-    if(mode==='bi') rho=furnasRho(phi0,sizes,[g,1-g]);
+function updateSweep(phi0,sizes,fracs){
+  if(mode==='mono'){if(chartInst){chartInst.destroy();chartInst=null;}
+    document.getElementById('optbar').textContent=`Monodisperse — packing = φ₀ = ${(phi0*100).toFixed(2)}%`;
+    document.getElementById('tblDiv').innerHTML='<div style="padding:16px;font-size:11px;color:var(--tx3)">No sweep for mono.</div>';return;}
+  const S=400,labels=[],dens=[];let bestRho=0,bestF1=0;const cF1=fracs[0];
+  for(let i=0;i<=S;i++){const g=i/S;let rho;
+    if(mode==='bi')rho=furnasRho(phi0,sizes,[g,1-g]);
     else{const f23=fracs[1]+fracs[2],r23=f23>0?fracs[1]/f23:.5;rho=furnasRho(phi0,sizes,[g,(1-g)*r23,(1-g)*(1-r23)]);}
-    labels.push((g*100).toFixed(1));dens.push(+(rho*100).toFixed(4));
-    if(rho>bestRho){bestRho=rho;bestF1=g;}
-  }
+    labels.push((g*100).toFixed(1));dens.push(+(rho*100).toFixed(4));if(rho>bestRho){bestRho=rho;bestF1=g;}}
   const curIdx=Math.round(cF1*S);
   if(chartInst){chartInst.destroy();chartInst=null;}
   const ctx=document.getElementById('sweepC');if(!ctx)return;
@@ -594,77 +516,40 @@ function updateSweep(phi0,sizes,fracs){
       plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,filter:i=>i.datasetIndex===0,
         callbacks:{label:c=>`Packing: ${c.parsed.y.toFixed(3)}%`}}},
       scales:{
-        x:{title:{display:true,text:`f₁ — ${sizes[0]}µm fraction (%)`,color:'#908c80',font:{family:'JetBrains Mono',size:10}},
-          ticks:{color:'#908c80',font:{family:'JetBrains Mono',size:9},maxTicksLimit:10},grid:{color:'rgba(0,0,0,.05)'}},
-        y:{title:{display:true,text:'Packing density (%)',color:'#908c80',font:{family:'JetBrains Mono',size:10}},
-          ticks:{color:'#908c80',font:{family:'JetBrains Mono',size:9}},grid:{color:'rgba(0,0,0,.05)'}}
+        x:{title:{display:true,text:`f₁ — ${sizes[0]}µm fraction (%)`,color:'#908a7c',font:{family:'JetBrains Mono',size:10}},
+          ticks:{color:'#908a7c',font:{family:'JetBrains Mono',size:9},maxTicksLimit:10},grid:{color:'rgba(0,0,0,.05)'}},
+        y:{title:{display:true,text:'Packing density (%)',color:'#908a7c',font:{family:'JetBrains Mono',size:10}},
+          ticks:{color:'#908a7c',font:{family:'JetBrains Mono',size:9}},grid:{color:'rgba(0,0,0,.05)'}}
       }
     }
   });
   document.getElementById('optbar').innerHTML=
-    `Optimum: f₁=<em>${(bestF1*100).toFixed(1)}%</em> → ρ=<em>${(bestRho*100).toFixed(3)}%</em>  ·  Current: f₁=<em>${(cF1*100).toFixed(1)}%</em> → ρ=<em>${(furnasRho(phi0,sizes,fracs)*100).toFixed(3)}%</em>`;
-
-  // ── Top blends table ──
+    `Optimum: f₁=<em>${(bestF1*100).toFixed(1)}%</em> → ρ=<em>${(bestRho*100).toFixed(3)}%</em>  ·  Now: f₁=<em>${(cF1*100).toFixed(1)}%</em> → ρ=<em>${(furnasRho(phi0,sizes,fracs)*100).toFixed(3)}%</em>`;
   if(mode==='bi'){
-    // Binary: 1-D sweep already done above
-    const all=[];
-    for(let i=0;i<=S;i++){
-      const g=i/S;
-      all.push({f1:g,f2:1-g,rho:furnasRho(phi0,sizes,[g,1-g])});
-    }
+    const all=[];for(let i=0;i<=S;i++){const g=i/S;all.push({f1:g,f2:1-g,rho:furnasRho(phi0,sizes,[g,1-g])});}
     all.sort((a,b)=>b.rho-a.rho);
-    // Deduplicate to spread out the table (step by 0.5% min gap)
-    const top=[];
-    for(const row of all){if(top.length>=12) break; if(top.every(t=>Math.abs(t.f1-row.f1)>.004)) top.push(row);}
+    const top=[];for(const row of all){if(top.length>=12)break;if(top.every(t=>Math.abs(t.f1-row.f1)>.004))top.push(row);}
     document.getElementById('tblDiv').innerHTML=`<table>
       <thead><tr><th>#</th><th>f₁ ${sizes[0]}µm</th><th>f₂ ${sizes[1]}µm</th><th>Packing</th><th>Void</th></tr></thead>
-      <tbody>${top.map((r,i)=>`<tr>
-        <td>${i+1}</td><td>${(r.f1*100).toFixed(1)}%</td><td>${(r.f2*100).toFixed(1)}%</td>
-        <td>${(r.rho*100).toFixed(3)}%</td><td>${((1-r.rho)*100).toFixed(3)}%</td></tr>`).join('')}</tbody>
-    </table>`;
-
-  } else if(mode==='tri'){
-    // Trimodal: full 2-D grid sweep over the simplex f1+f2+f3=1
-    // Use 60 steps per axis → 60*60/2 ≈ 1800 evaluations (fast)
-    const T=60;
-    const all3=[];
-    for(let i=0;i<=T;i++){
-      const f1=i/T;
-      for(let j=0;j<=T-i;j++){
-        const f2=j/T;
-        const f3=Math.max(0,1-f1-f2);
-        if(f1+f2>1.001) continue;
-        const rho=furnasRho(phi0,sizes,[f1,f2,f3]);
-        all3.push({f1,f2,f3,rho});
-      }
-    }
+      <tbody>${top.map((r,i)=>`<tr><td>${i+1}</td><td>${(r.f1*100).toFixed(1)}%</td><td>${(r.f2*100).toFixed(1)}%</td>
+        <td>${(r.rho*100).toFixed(3)}%</td><td>${((1-r.rho)*100).toFixed(3)}%</td></tr>`).join('')}</tbody></table>`;
+  } else {
+    const T=60,all3=[];
+    for(let i=0;i<=T;i++){const f1=i/T;for(let j=0;j<=T-i;j++){
+      const f2=j/T,f3=Math.max(0,1-f1-f2);if(f1+f2>1.001)continue;
+      all3.push({f1,f2,f3,rho:furnasRho(phi0,sizes,[f1,f2,f3])});  }}
     all3.sort((a,b)=>b.rho-a.rho);
-    // Deduplicate so table shows diverse blends, not 12 near-identical plateau entries
-    const top3=[];
-    for(const row of all3){
-      if(top3.length>=12) break;
-      const isClose=top3.some(t=>
-        Math.abs(t.f1-row.f1)<.015 &&
-        Math.abs(t.f2-row.f2)<.015 &&
-        Math.abs(t.f3-row.f3)<.015
-      );
-      if(!isClose) top3.push(row);
-    }
+    const top3=[];for(const row of all3){if(top3.length>=12)break;
+      if(top3.every(t=>Math.abs(t.f1-row.f1)>.015&&Math.abs(t.f2-row.f2)>.015))top3.push(row);}
     document.getElementById('tblDiv').innerHTML=`<table>
       <thead><tr><th>#</th><th>f₁ ${sizes[0]}µm</th><th>f₂ ${sizes[1]}µm</th><th>f₃ ${sizes[2]}µm</th><th>Packing</th><th>Void</th></tr></thead>
-      <tbody>${top3.map((r,i)=>`<tr>
-        <td>${i+1}</td>
-        <td>${(r.f1*100).toFixed(1)}%</td>
-        <td>${(r.f2*100).toFixed(1)}%</td>
-        <td>${(r.f3*100).toFixed(1)}%</td>
-        <td>${(r.rho*100).toFixed(3)}%</td>
-        <td>${((1-r.rho)*100).toFixed(3)}%</td></tr>`).join('')}</tbody>
-    </table>`;
+      <tbody>${top3.map((r,i)=>`<tr><td>${i+1}</td><td>${(r.f1*100).toFixed(1)}%</td><td>${(r.f2*100).toFixed(1)}%</td>
+        <td>${(r.f3*100).toFixed(1)}%</td><td>${(r.rho*100).toFixed(3)}%</td><td>${((1-r.rho)*100).toFixed(3)}%</td></tr>`).join('')}</tbody></table>`;
   }
 }
 
 // ═══════════════════════════════════════════════════════════
-// VIZ TABS
+// VIZ HELPERS
 // ═══════════════════════════════════════════════════════════
 function setVTab(t){
   vizTab=t;
@@ -673,350 +558,205 @@ function setVTab(t){
   document.getElementById('vp-pack').classList.toggle('hidden',t!=='pack');
   document.getElementById('vp-reff').classList.toggle('hidden',t!=='reff');
   const phi0=getPhi0(),sizes=getSizes(),fracs=getFracs(),rho=furnasRho(phi0,sizes,fracs);
-  requestAnimationFrame(()=>{
-    if(t==='pack') drawPack(phi0,sizes,fracs,rho);
-    else drawREff(phi0,sizes);
-  });
+  requestAnimationFrame(()=>{if(t==='pack')drawPack(phi0,sizes,fracs,rho);else drawREff(phi0,sizes);});
 }
-
-// ═══════════════════════════════════════════════════════════
-// DRAW PARTICLE — reusable 3-D sphere with specular
-// ═══════════════════════════════════════════════════════════
-// ── HiDPI canvas setup ──────────────────────────────────────
-// Call once per draw. Sets canvas pixel buffer = CSS size × DPR,
-// scales ctx so all draw calls use CSS coordinates.
-// Returns {W, H} in CSS pixels (logical size).
 function setupCanvas(canvas){
   const dpr=window.devicePixelRatio||1;
-  const rect=canvas.getBoundingClientRect();
-  // Only resize if dimensions actually changed (avoids clearing mid-draw)
-  const cssW=rect.width||canvas.offsetWidth||500;
-  const cssH=rect.height||canvas.offsetHeight||460;
-  if(canvas.width!==Math.round(cssW*dpr)||canvas.height!==Math.round(cssH*dpr)){
-    canvas.width =Math.round(cssW*dpr);
-    canvas.height=Math.round(cssH*dpr);
-  }
-  const ctx=canvas.getContext('2d');
-  ctx.setTransform(dpr,0,0,dpr,0,0); // reset + scale
-  return {ctx, W:cssW, H:cssH, dpr};
+  const r=canvas.getBoundingClientRect();
+  const cW=r.width||canvas.offsetWidth||500,cH=r.height||canvas.offsetHeight||450;
+  if(canvas.width!==Math.round(cW*dpr)||canvas.height!==Math.round(cH*dpr)){
+    canvas.width=Math.round(cW*dpr);canvas.height=Math.round(cH*dpr);}
+  const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);
+  return{ctx,W:cW,H:cH};
 }
-
-function drawSphere(ctx,x,y,r,baseCol,lightCol){
-  // Body gradient
+function drawSphere(ctx,x,y,r,col,colL){
   const grd=ctx.createRadialGradient(x-r*.28,y-r*.32,r*.04,x+r*.05,y+r*.06,r);
-  grd.addColorStop(0,'rgba(255,255,255,.55)');
-  grd.addColorStop(.3,lightCol);
-  grd.addColorStop(.75,baseCol);
-  grd.addColorStop(1,darkCol(baseCol,.55));
-  ctx.save();
-  ctx.shadowColor='rgba(0,0,0,.28)';
-  ctx.shadowBlur=r*.7;
-  ctx.shadowOffsetX=r*.12;
-  ctx.shadowOffsetY=r*.18;
-  ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
-  ctx.fillStyle=grd;ctx.fill();
-  ctx.restore();
-  // Rim highlight
-  ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
-  ctx.strokeStyle='rgba(255,255,255,.25)';ctx.lineWidth=r*.08;ctx.stroke();
-  // Specular glint
-  const sg=ctx.createRadialGradient(x-r*.25,y-r*.3,0,x-r*.25,y-r*.3,r*.4);
-  sg.addColorStop(0,'rgba(255,255,255,.62)');sg.addColorStop(1,'rgba(255,255,255,0)');
-  ctx.save();ctx.globalAlpha=.75;
-  ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.clip();
-  ctx.fillStyle=sg;ctx.fillRect(x-r,y-r,r*2,r*2);
-  ctx.restore();
+  grd.addColorStop(0,'rgba(255,255,255,.55)');grd.addColorStop(.35,colL);
+  grd.addColorStop(.75,col);grd.addColorStop(1,dk(col,.55));
+  ctx.save();ctx.shadowColor='rgba(0,0,0,.28)';ctx.shadowBlur=r*.65;ctx.shadowOffsetX=r*.1;ctx.shadowOffsetY=r*.18;
+  ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();ctx.restore();
+  const sg=ctx.createRadialGradient(x-r*.25,y-r*.3,0,x-r*.25,y-r*.3,r*.42);
+  sg.addColorStop(0,'rgba(255,255,255,.65)');sg.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.save();ctx.globalAlpha=.8;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.clip();
+  ctx.fillStyle=sg;ctx.fillRect(x-r,y-r,r*2,r*2);ctx.restore();
 }
-
-function darkCol(hex,f){
-  let r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
-  return`rgb(${~~(r*f)},${~~(g*f)},${~~(b*f)})`;
-}
+function dk(hex,f){let r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return`rgb(${~~(r*f)},${~~(g*f)},${~~(b*f)})`;}
 
 // ═══════════════════════════════════════════════════════════
-// DRAW PACKING — RSA with physically accurate particle counts
-//
-// KEY DESIGN: total solid AREA on canvas = rho * canvasArea
-// Each component i contributes fracs[i]*rho*W*H of solid area.
-// Particle visual radius scaled so LARGEST spans ~BASE pixels.
-// Particle counts derived from target area ÷ (π r²).
-// Small particles are drawn AFTER large ones so they visually
-// nestle in the gaps — exactly showing the Furnas mechanism.
+// DRAW PACKING  — the main visualization
+// ─────────────────────────────────────────────────────────
+// Visual density rule (enforced by construction):
+//   N × (weighted avg π r²) = rho × W × H
+// So the fraction of canvas covered by particles = rho.
+// The background (void color) shows through in the GAPS.
+// The user sees: high rho → particles nearly touching, tiny gaps
+//                low rho  → widely spaced particles, obvious gaps
 // ═══════════════════════════════════════════════════════════
 function drawPack(phi0,sizes,fracs,rho){
-  const canvas=document.getElementById('packCanvas');
-  if(!canvas) return;
-  const {ctx,W,H}=setupCanvas(canvas);
+  const canvas=document.getElementById('packCanvas');if(!canvas)return;
+  const{ctx,W,H}=setupCanvas(canvas);
 
-  // Background: warm paper with subtle dots for void texture
-  ctx.fillStyle='#f5f2e8';
-  ctx.fillRect(0,0,W,H);
-  // void texture dots
-  ctx.fillStyle='rgba(180,175,160,.35)';
-  for(let y=10;y<H;y+=16) for(let x=10;x<W;x+=16){
-    ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();
-  }
+  // Void background: gets slightly darker as packing increases
+  // (less background visible → use contrasting colour)
+  const vf=1-rho;
+  const bgR=Math.round(242+vf*8),bgG=Math.round(238+vf*7),bgB=Math.round(226+vf*10);
+  ctx.fillStyle=`rgb(${bgR},${bgG},${bgB})`;ctx.fillRect(0,0,W,H);
 
-  const n=sizes.length;
-  if(n===0) return;
+  // Subtle dot grid on background — makes voids more "texture-visible"
+  ctx.fillStyle=`rgba(180,172,155,${(0.08+vf*0.22).toFixed(2)})`;
+  const ds=Math.round(11+vf*7);
+  for(let y=ds;y<H;y+=ds)for(let x=ds;x<W;x+=ds){ctx.beginPath();ctx.arc(x,y,.8,0,Math.PI*2);ctx.fill();}
 
-  // Visual radius: largest gets BASE, others proportional (cube-root compressed for visibility)
-  const maxD=Math.max(...sizes);
-  const BASE=Math.min(W,H)*.055;
-  const vR=sizes.map(d=>Math.max(3,BASE*Math.pow(d/maxD,.5)));
+  const n=sizes.length;if(n===0)return;
+  const{vR,counts}=computeParticles(phi0,sizes,fracs,rho,W,H);
 
-  // Particle counts: derived from ACTUAL packing fractions and target area
-  // solidArea per component = fracs[i] * rho * W * H
-  // count[i] = solidArea[i] / (π * vR[i]²)
-  const totalSolidArea=rho*W*H;
-  const rawCounts=sizes.map((d,i)=>{
-    const area=fracs[i]*totalSolidArea;
-    return Math.max(1,Math.round(area/(Math.PI*vR[i]*vR[i])));
-  });
-
-  // Scale to performance cap while PRESERVING RATIOS
-  const totalRaw=rawCounts.reduce((a,b)=>a+b,0);
-  const cap=700;
-  const scale=totalRaw>cap?cap/totalRaw:1;
-  const counts=rawCounts.map(c=>Math.max(1,Math.round(c*scale)));
-
-  // Sort components largest-first for placement order
-  const order=[...Array(n).keys()].sort((a,b)=>sizes[b]-sizes[a]);
-
-  // RSA placement — seeded random, deterministic
+  // RSA placement: largest → smallest (small nestle in gaps of large)
+  const tierOrder=[...Array(n).keys()].sort((a,b)=>sizes[b]-sizes[a]);
   const rng=mkRng(rngSeed);
-  const placed=[];  // {x,y,r,ci}
+  const placed=[];
 
-  function hitTest(x,y,r){
-    // boundary
-    if(x-r<1||x+r>W-1||y-r<1||y+r>H-1) return true;
-    for(let i=0;i<placed.length;i++){
-      const p=placed[i];
-      const dx=p.x-x,dy=p.y-y;
-      if(dx*dx+dy*dy<(p.r+r+.8)*(p.r+r+.8)) return true;
-    }
+  function hit(x,y,r){
+    if(x-r<1||x+r>W-1||y-r<1||y+r>H-1)return true;
+    for(let i=0;i<placed.length;i++){const p=placed[i];const dx=p.x-x,dy=p.y-y;
+      if(dx*dx+dy*dy<(p.r+r+.6)*(p.r+r+.6))return true;}
     return false;
   }
 
-  // Adaptive attempts: large particles need more canvas, fewer tries ok
-  // Small particles: many more tries to fill gaps
-  const TRIES_LARGE=60, TRIES_SMALL=200;
-
-  order.forEach(ci=>{
-    const r=vR[ci];
-    const cnt=counts[ci];
-    const tries=r>12?TRIES_LARGE:TRIES_SMALL;
+  tierOrder.forEach(ci=>{
+    const r=vR[ci],cnt=counts[ci];
+    const tries=r>12?70:r>7?160:280;
     for(let k=0;k<cnt;k++){
-      let ok=false;
       for(let t=0;t<tries;t++){
-        const x=r+1+rng()*(W-2*r-2);
-        const y=r+1+rng()*(H-2*r-2);
-        if(!hitTest(x,y,r)){placed.push({x,y,r,ci});ok=true;break;}
+        const x=r+1+rng()*(W-2*r-2),y=r+1+rng()*(H-2*r-2);
+        if(!hit(x,y,r)){placed.push({x,y,r,ci});break;}
       }
-      // If RSA exhausted: skip (don't force — avoids visual glitches)
     }
   });
 
-  // Draw particles: large → small so small nestle on top of large
+  // Render large → small so small particles appear in gaps on top
   placed.sort((a,b)=>b.r-a.r);
   placed.forEach(p=>drawSphere(ctx,p.x,p.y,p.r,COLS[p.ci],COLS_L[p.ci]));
 
-  // ── Overlay statistics panel ──
-  const panH=38,panY=H-panH;
-  ctx.fillStyle='rgba(243,241,234,.9)';
-  ctx.fillRect(0,panY,W,panH);
+  // ── Info strip ─────────────────────────────────────────
+  ctx.fillStyle='rgba(243,240,232,.9)';ctx.fillRect(0,H-32,W,32);
   ctx.strokeStyle='rgba(0,0,0,.08)';ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(0,panY);ctx.lineTo(W,panY);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(0,H-32);ctx.lineTo(W,H-32);ctx.stroke();
 
-  // Packing bar inside panel
-  const barX=12,barY=panY+8,barW=W-24,barH=8;
-  ctx.fillStyle='rgba(200,196,185,.5)';
-  ctx.beginPath();roundRect(ctx,barX,barY,barW,barH,4);ctx.fill();
-  ctx.fillStyle=rho>.80?'#1a6b4a':rho>.70?'#1450a0':'#b8440e';
-  ctx.beginPath();roundRect(ctx,barX,barY,barW*rho,barH,4);ctx.fill();
+  // Mini packing bar inside strip
+  const bx=10,by=H-22,bw=W-20,bh=8;
+  ctx.fillStyle='rgba(190,185,170,.5)';rr(ctx,bx,by,bw,bh,4);ctx.fill();
+  const fc=rho>.80?'#1a6b4a':rho>.70?'#1450a0':'#b8440e';
+  ctx.fillStyle=fc;rr(ctx,bx,by,bw*rho,bh,4);ctx.fill();
 
-  // Label
-  ctx.font='bold 10px JetBrains Mono,monospace';
-  ctx.fillStyle='#17160e';ctx.textAlign='left';ctx.textBaseline='top';
-  ctx.fillText(`ρ = ${(rho*100).toFixed(2)}%   void = ${((1-rho)*100).toFixed(2)}%   n = ${placed.length} particles`,barX,panY+18);
+  ctx.fillStyle='#504c42';ctx.font='9px JetBrains Mono,monospace';
+  ctx.textAlign='left';ctx.textBaseline='middle';
+  ctx.fillText(`ρ = ${(rho*100).toFixed(2)}%   void = ${(vf*100).toFixed(2)}%   n = ${placed.length} particles`,bx+2,H-32+16);
 
-  // ── Watermark ──
-  ctx.save();ctx.globalAlpha=.06;
-  ctx.font=`bold ${W*.15}px Fraunces,Georgia,serif`;
+  // ── Watermark ──────────────────────────────────────────
+  ctx.save();ctx.globalAlpha=.05;
+  ctx.font=`bold ${W*.14}px Fraunces,Georgia,serif`;
   ctx.fillStyle=COLS[0];ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText((rho*100).toFixed(0)+'%',W/2,H/2-16);
-  ctx.restore();
+  ctx.fillText((rho*100).toFixed(0)+'%',W/2,H/2-14);ctx.restore();
 }
 
-function roundRect(ctx,x,y,w,h,r){
-  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+function rr(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
   ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
   ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
   ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
 }
 
 // ═══════════════════════════════════════════════════════════
-// DRAW r-EFFECT
-// Top: three mini packing panels at r=0.05, 0.20, 0.65
-// Bottom: ρ_max vs r curve with current system marked
+// r-EFFECT VIEW
 // ═══════════════════════════════════════════════════════════
 function drawREff(phi0,sizes){
-  const canvas=document.getElementById('reffCanvas');
-  if(!canvas) return;
-  const {ctx,W,H}=setupCanvas(canvas);
-  ctx.fillStyle='#f5f2e8';ctx.fillRect(0,0,W,H);
+  const canvas=document.getElementById('reffCanvas');if(!canvas)return;
+  const{ctx,W,H}=setupCanvas(canvas);
+  ctx.fillStyle='#f3f0e6';ctx.fillRect(0,0,W,H);
+  const rVals=[.05,.20,.60];
+  const panW=Math.floor(W/3),panH=Math.floor(H*.50);
+  const chartY=panH+6,chartH=H-chartY-8;
 
-  const rVals=[.05,.20,.65];
-  const panW=Math.floor(W/3), panH=Math.floor(H*.52);
-  const chartY=panH+6, chartH=H-chartY-8;
-
-  // ── Three mini panels ──
   rVals.forEach((r,col)=>{
-    const u=1-r;
-    const rhoMax=Math.min(.975,phi0+(1-phi0)*phi0*u);
+    const u=1-r,rhoMax=Math.min(.975,phi0+(1-phi0)*phi0*u);
     const gStar=phi0/rhoMax;
     const px=col*panW,py=0;
+    const pw=panW-6,ph=panH-36;
+    const po_x=px+3,po_y=py+4;
 
-    ctx.fillStyle=col%2===0?'#f2efea':'#eeebe0';
-    ctx.fillRect(px,py,panW,panH);
-    // subtle grid
-    ctx.strokeStyle='rgba(180,175,160,.22)';ctx.lineWidth=.5;
-    for(let x=px;x<px+panW;x+=22){ctx.beginPath();ctx.moveTo(x,py);ctx.lineTo(x,py+panH);ctx.stroke();}
-    for(let y=py;y<py+panH;y+=22){ctx.beginPath();ctx.moveTo(px,y);ctx.lineTo(px+panW,y);ctx.stroke();}
+    // bg
+    const vf=1-rhoMax;
+    const bgR=Math.round(242+vf*8),bgG=Math.round(238+vf*7),bgB=Math.round(226+vf*10);
+    ctx.fillStyle=`rgb(${bgR},${bgG},${bgB})`;ctx.fillRect(po_x,po_y,pw,ph);
+    ctx.fillStyle=`rgba(180,172,155,${(0.08+vf*0.22).toFixed(2)})`;
+    const ds=Math.round(11+vf*7);
+    for(let y=po_y+ds;y<po_y+ph;y+=ds)for(let x=po_x+ds;x<po_x+pw;x+=ds){ctx.beginPath();ctx.arc(x,y,.8,0,Math.PI*2);ctx.fill();}
 
-    // Mini RSA
-    const BASE=panW*.082;
-    const vizRL=BASE;
-    const vizRS=Math.max(2.5,vizRL*r);
-    const totalA=rhoMax*panW*(panH-32);
-    const cntL=Math.max(2,Math.round((gStar*totalA)/(Math.PI*vizRL*vizRL)));
-    const cntS=Math.max(2,Math.round(((1-gStar)*totalA)/(Math.PI*vizRS*vizRS)));
-    const cntLc=Math.min(cntL,80);
-    const cntSc=Math.min(cntS,300);
-
+    // RSA mini
     const rng=mkRng(rngSeed+col*31);
+    const BASE=Math.sqrt(0.64*pw*ph/(80*Math.PI));
+    const vRL=Math.max(4,BASE);const vRS=Math.max(3,BASE*.52);
+    const avgA=gStar*Math.PI*vRL*vRL+(1-gStar)*Math.PI*vRS*vRS;
+    const N=Math.min(220,Math.round(rhoMax*pw*ph/avgA));
+    const cntL=Math.max(1,Math.round(gStar*N));const cntS=Math.max(1,Math.round((1-gStar)*N));
     const pl=[];
-    function hit2(x,y,rd){
-      if(x-rd<px+1||x+rd>px+panW-1||y-rd<py+1||y+rd>py+panH-32) return true;
-      for(let i=0;i<pl.length;i++){const p=pl[i];const dx=p.x-x,dy=p.y-y;if(dx*dx+dy*dy<(p.r+rd+.5)*(p.r+rd+.5)) return true;}
-      return false;
-    }
-    for(let k=0;k<cntLc;k++){for(let t=0;t<80;t++){const x=px+vizRL+1+rng()*(panW-2*vizRL-2),y=py+vizRL+1+rng()*(panH-32-2*vizRL);if(!hit2(x,y,vizRL)){pl.push({x,y,r:vizRL,t:0});break;}}}
-    for(let k=0;k<cntSc;k++){for(let t=0;t<160;t++){const x=px+vizRS+1+rng()*(panW-2*vizRS-2),y=py+vizRS+1+rng()*(panH-32-2*vizRS);if(!hit2(x,y,vizRS)){pl.push({x,y,r:vizRS,t:1});break;}}}
-
+    function h2(x,y,rd){if(x-rd<po_x+1||x+rd>po_x+pw-1||y-rd<po_y+1||y+rd>po_y+ph-1)return true;
+      for(let i=0;i<pl.length;i++){const p=pl[i];const dx=p.x-x,dy=p.y-y;if(dx*dx+dy*dy<(p.r+rd+.5)*(p.r+rd+.5))return true;}return false;}
+    for(let k=0;k<cntL;k++){for(let t=0;t<80;t++){const x=po_x+vRL+1+rng()*(pw-2*vRL-2),y=po_y+vRL+1+rng()*(ph-2*vRL-2);if(!h2(x,y,vRL)){pl.push({x,y,r:vRL,ci:col});break;}}}
+    for(let k=0;k<cntS;k++){for(let t=0;t<180;t++){const x=po_x+vRS+1+rng()*(pw-2*vRS-2),y=po_y+vRS+1+rng()*(ph-2*vRS-2);if(!h2(x,y,vRS)){pl.push({x,y,r:vRS,ci:3});break;}}}
     pl.sort((a,b)=>b.r-a.r);
-    pl.forEach(p=>drawSphere(ctx,p.x,p.y,p.r,p.t===0?COLS[col]:'#8a8880',p.t===0?COLS_L[col]:'rgba(138,136,128,.85)'));
+    pl.forEach(p=>{const c=p.ci<3?COLS[p.ci]:'#888880';const cl=p.ci<3?COLS_L[p.ci]:'rgba(136,136,128,.85)';drawSphere(ctx,p.x,p.y,p.r,c,cl);});
 
-    // Panel footer
-    ctx.fillStyle='rgba(243,241,234,.92)';ctx.fillRect(px,py+panH-30,panW,30);
+    // label
+    ctx.fillStyle='rgba(243,240,232,.92)';ctx.fillRect(px,py+panH-30,panW,30);
     ctx.strokeStyle='rgba(0,0,0,.07)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(px,py+panH-30);ctx.lineTo(px+panW,py+panH-30);ctx.stroke();
-
     const q=r<.1?'Excellent':r<.25?'Good':'Poor';
-    const qcol=r<.1?'#1a6b4a':r<.25?'#1450a0':'#b8440e';
-    ctx.font='bold 10px JetBrains Mono,monospace';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillStyle=qcol;
+    const qc=r<.1?'#1a6b4a':r<.25?'#1450a0':'#b8440e';
+    ctx.font='bold 10px JetBrains Mono,monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=qc;
     ctx.fillText(`r=${r.toFixed(2)}  ρ_max=${(rhoMax*100).toFixed(1)}%  (${q})`,px+panW/2,py+panH-15);
-
-    if(col<2){
-      ctx.strokeStyle='rgba(180,174,160,.7)';ctx.lineWidth=1.5;
-      ctx.beginPath();ctx.moveTo(px+panW,py);ctx.lineTo(px+panW,py+panH);ctx.stroke();
-    }
+    if(col<2){ctx.strokeStyle='rgba(180,174,160,.6)';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(px+panW,py);ctx.lineTo(px+panW,py+panH);ctx.stroke();}
   });
 
-  // ── ρ_max vs r curve ──
-  const cL=42,cR=14,cT=chartY+24,cB=H-20;
-  const cW=W-cL-cR,cH=cB-cT;
-
-  ctx.fillStyle='#f0ede5';
-  ctx.fillRect(cL,chartY,cW+cR,cH+24+20);
-
-  // Axis labels
-  ctx.fillStyle='#908c80';ctx.font='9px JetBrains Mono,monospace';
-  ctx.textAlign='center';ctx.fillText('Size ratio   r = d_small / d_large',cL+cW/2,cB+15);
-  ctx.save();ctx.translate(13,cT+cH/2);ctx.rotate(-Math.PI/2);
-  ctx.fillText('ρ_max  (%)',0,0);ctx.restore();
-
-  // Build curve points
+  // rho_max vs r curve
+  const cL=42,cR=14,cT=chartY+24,cB=H-20,cW=W-cL-cR,cH=cB-cT;
+  ctx.fillStyle='#eeeae0';ctx.fillRect(cL,chartY,cW+cR,cH+24+20);
+  ctx.fillStyle='#908a7c';ctx.font='9px JetBrains Mono,monospace';
+  ctx.textAlign='center';ctx.fillText('Size ratio  r = d_small / d_large',cL+cW/2,cB+15);
+  ctx.save();ctx.translate(13,cT+cH/2);ctx.rotate(-Math.PI/2);ctx.fillText('ρ_max (%)',0,0);ctx.restore();
   const pts=[];
-  for(let ri=0;ri<=200;ri++){
-    const r=ri/200,u=1-r;
-    const rhoMax=phi0+(1-phi0)*phi0*u;
-    pts.push([cL+r*cW, cB-((rhoMax-phi0)/(.975-phi0))*cH]);
-  }
-
-  // Gradient fill under curve
+  for(let ri=0;ri<=200;ri++){const r=ri/200,rm=phi0+(1-phi0)*phi0*(1-r);pts.push([cL+r*cW,cB-((rm-phi0)/(.975-phi0))*cH]);}
   const grd=ctx.createLinearGradient(cL,cT,cL,cB);
   grd.addColorStop(0,'rgba(26,107,74,.18)');grd.addColorStop(1,'rgba(26,107,74,.02)');
-  ctx.beginPath();ctx.moveTo(pts[0][0],cB);
-  pts.forEach(([x,y])=>ctx.lineTo(x,y));
-  ctx.lineTo(pts[pts.length-1][0],cB);ctx.closePath();
-  ctx.fillStyle=grd;ctx.fill();
-
-  // Curve line
+  ctx.beginPath();ctx.moveTo(pts[0][0],cB);pts.forEach(([x,y])=>ctx.lineTo(x,y));
+  ctx.lineTo(pts[pts.length-1][0],cB);ctx.closePath();ctx.fillStyle=grd;ctx.fill();
   ctx.beginPath();pts.forEach(([x,y],i)=>i===0?ctx.moveTo(x,y):ctx.lineTo(x,y));
   ctx.strokeStyle='#1a6b4a';ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.stroke();
-
-  // phi0 baseline
   ctx.beginPath();ctx.moveTo(cL,cB);ctx.lineTo(cL+cW,cB);
   ctx.strokeStyle='rgba(0,0,0,.12)';ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
-  ctx.fillStyle='#908c80';ctx.font='9px JetBrains Mono,monospace';
-  ctx.textAlign='left';ctx.fillText(`φ₀=${phi0.toFixed(2)}`,cL+3,cB-4);
-
-  // Mark the three showcase r values
-  rVals.forEach((r,i)=>{
-    const u=1-r,rhoMax=phi0+(1-phi0)*phi0*u;
-    const xPx=cL+r*cW,yPx=cB-((rhoMax-phi0)/(.975-phi0))*cH;
-    ctx.beginPath();ctx.arc(xPx,yPx,5,0,Math.PI*2);
-    ctx.fillStyle='rgba(255,255,255,.8)';ctx.fill();
-    ctx.strokeStyle=COLS[i];ctx.lineWidth=2;ctx.stroke();
-  });
-
-  // Mark CURRENT system r values
-  if(mode!=='mono'){
-    const sorted=[...sizes].sort((a,b)=>b-a);
-    for(let i=0;i<sorted.length-1;i++){
-      const r=sorted[i+1]/sorted[0],u=1-r;
-      const rhoMax=phi0+(1-phi0)*phi0*u;
-      const xPx=cL+r*cW,yPx=cB-((rhoMax-phi0)/(.975-phi0))*cH;
-      // Pulsing ring
-      ctx.beginPath();ctx.arc(xPx,yPx,9,0,Math.PI*2);
-      ctx.strokeStyle=COLS[i];ctx.lineWidth=2;ctx.globalAlpha=.35;ctx.stroke();ctx.globalAlpha=1;
-      ctx.beginPath();ctx.arc(xPx,yPx,6,0,Math.PI*2);
-      ctx.fillStyle=COLS[i];ctx.fill();
-      ctx.strokeStyle='white';ctx.lineWidth=2;ctx.stroke();
-      // Label
-      ctx.font='bold 10px JetBrains Mono,monospace';ctx.textAlign='center';ctx.fillStyle=COLS[i];
-      ctx.fillText(`r=${r.toFixed(3)}`,xPx,yPx-13);
-    }
-  }
-
-  // X-axis ticks
-  ctx.fillStyle='#908c80';ctx.font='9px JetBrains Mono,monospace';ctx.textAlign='center';
-  [0,.2,.4,.6,.8,1].forEach(r=>{
-    const x=cL+r*cW;
-    ctx.beginPath();ctx.moveTo(x,cB);ctx.lineTo(x,cB+4);ctx.strokeStyle='#908c80';ctx.lineWidth=1;ctx.stroke();
-    ctx.fillText(r.toFixed(1),x,cB+14);
-  });
-  // Y-axis ticks
-  ctx.textAlign='right';
-  [0,25,50,75,100].forEach(pct=>{
-    const rhoVal=phi0+((.975-phi0)*pct/100);
-    const y=cB-pct/100*cH;
-    ctx.beginPath();ctx.moveTo(cL,y);ctx.lineTo(cL-4,y);ctx.strokeStyle='#908c80';ctx.lineWidth=1;ctx.stroke();
-    ctx.fillText((rhoVal*100).toFixed(0)+'%',cL-6,y+3);
-  });
-
-  // Chart title
-  ctx.fillStyle='#504d44';ctx.font='bold 10px JetBrains Mono,monospace';ctx.textAlign='center';
-  ctx.fillText(`ρ_max vs size ratio r  (φ₀ = ${phi0.toFixed(2)})`,cL+cW/2,chartY+14);
+  ctx.fillStyle='#908a7c';ctx.font='9px JetBrains Mono,monospace';ctx.textAlign='left';ctx.fillText(`φ₀=${phi0.toFixed(2)}`,cL+3,cB-4);
+  rVals.forEach((r,i)=>{const rm=phi0+(1-phi0)*phi0*(1-r);
+    const xP=cL+r*cW,yP=cB-((rm-phi0)/(.975-phi0))*cH;
+    ctx.beginPath();ctx.arc(xP,yP,5,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,.85)';ctx.fill();
+    ctx.strokeStyle=COLS[i];ctx.lineWidth=2;ctx.stroke();});
+  if(mode!=='mono'){const sorted=[...sizes].sort((a,b)=>b-a);
+    for(let i=0;i<sorted.length-1;i++){const r=sorted[i+1]/sorted[0],rm=phi0+(1-phi0)*phi0*(1-r);
+      const xP=cL+r*cW,yP=cB-((rm-phi0)/(.975-phi0))*cH;
+      ctx.beginPath();ctx.arc(xP,yP,9,0,Math.PI*2);ctx.strokeStyle=COLS[i];ctx.lineWidth=2;ctx.globalAlpha=.3;ctx.stroke();ctx.globalAlpha=1;
+      ctx.beginPath();ctx.arc(xP,yP,6,0,Math.PI*2);ctx.fillStyle=COLS[i];ctx.fill();ctx.strokeStyle='white';ctx.lineWidth=2;ctx.stroke();
+      ctx.font='bold 10px JetBrains Mono,monospace';ctx.textAlign='center';ctx.fillStyle=COLS[i];ctx.fillText(`r=${r.toFixed(3)}`,xP,yP-13);}}
+  ctx.fillStyle='#908a7c';ctx.font='9px JetBrains Mono,monospace';ctx.textAlign='center';
+  [0,.2,.4,.6,.8,1].forEach(r=>{const x=cL+r*cW;ctx.beginPath();ctx.moveTo(x,cB);ctx.lineTo(x,cB+4);ctx.strokeStyle='#908a7c';ctx.lineWidth=1;ctx.stroke();ctx.fillText(r.toFixed(1),x,cB+14);});
+  ctx.textAlign='right';[0,25,50,75,100].forEach(p=>{const rv=phi0+((.975-phi0)*p/100),y=cB-p/100*cH;
+    ctx.beginPath();ctx.moveTo(cL,y);ctx.lineTo(cL-4,y);ctx.strokeStyle='#908a7c';ctx.lineWidth=1;ctx.stroke();ctx.fillText((rv*100).toFixed(0)+'%',cL-6,y+3);});
+  ctx.fillStyle='#504c42';ctx.font='bold 10px JetBrains Mono,monospace';ctx.textAlign='center';
+  ctx.fillText(`ρ_max vs r  (φ₀=${phi0.toFixed(2)})`,cL+cW/2,chartY+14);
 }
 
 // ═══════════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════════
-onPhi();
-update();
+onPhi();update();
 </script>
 </body>
 </html>
